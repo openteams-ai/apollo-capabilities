@@ -10,5 +10,8 @@ name = "JupyterLab"
 description = "Pre-configured local installation of JupyterLab."
 icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/docs/source/_static/jupyter_logo.svg"
 
+[dependencies]
+jupyterlab = ">=4.0,<5"
+
 [tasks]
-launch = { cmd = "echo 'Hello, Jupyter!'" }
+launch = { cmd = "jupyter lab $1" }
