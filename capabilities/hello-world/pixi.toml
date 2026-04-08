@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "hello-world"
 version = "0.1.0"
 description = "A minimal hello-world capability"
