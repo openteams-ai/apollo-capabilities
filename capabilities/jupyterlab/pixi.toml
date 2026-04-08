@@ -1,7 +1,6 @@
 [workspace]
 name = "jupyterlab"
 version = "0.1.0"
-description = "A minimal JupyterLab capability"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
@@ -9,9 +8,13 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 jupyterlab = ">=4.0,<5"
 
 [tool.capability]
+spec-version = 1
+
+[tool.capability.jupyterlab]
 name = "JupyterLab"
-description = "Pre-configured local installation of JupyterLab."
+description = "A minimal JupyterLab capability"
 icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/docs/source/_static/jupyter_logo.svg"
+author = { name = "OpenTeams", email = "info@openteams.com" }
 
 [tasks]
 launch = { cmd = "jupyter lab $1" }
