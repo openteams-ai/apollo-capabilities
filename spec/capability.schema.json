@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/main/spec/capability.schema.json",
+  "title": "Apollo Capability Manifest",
+  "description": "JSON Schema for Apollo capability metadata embedded in a Pixi manifest. This schema applies after the TOML manifest has been parsed into a generic object representation.",
+  "type": "object",
+  "required": ["workspace", "tool", "tasks"],
+  "properties": {
+    "workspace": {
+      "type": "object",
+      "required": ["name", "version", "channels", "platforms"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "channels": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "platforms": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": true
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "tasks": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/taskDefinition" }
+    },
+    "tool": {
+      "type": "object",
+      "required": ["capability"],
+      "properties": {
+        "capability": {
+          "type": "object",
+          "required": ["spec-version"],
+          "properties": {
+            "spec-version": { "const": "0.1.0" }
+          },
+          "patternProperties": {
+            "^(?!spec-version$)[A-Za-z0-9][A-Za-z0-9_-]*$": { "$ref": "#/$defs/orgNamespace" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "capabilityKey": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "orgNamespace": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/capabilityKey" },
+      "additionalProperties": { "$ref": "#/$defs/capabilityDefinition" }
+    },
+    "taskDefinition": {
+      "anyOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "object", "minProperties": 1, "additionalProperties": true }
+      ]
+    },
+    "author": {
+      "type": "object",
+      "required": ["name", "email"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "email": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "targetConfig": {
+      "type": "object",
+      "required": ["task"],
+      "properties": {
+        "task": { "type": "string", "minLength": 1 },
+        "environment": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "targets": {
+      "type": "object",
+      "properties": {
+        "local": { "$ref": "#/$defs/targetConfig" },
+        "hub": { "$ref": "#/$defs/targetConfig" }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "capabilityDefinition": {
+      "type": "object",
+      "required": ["name", "description", "default-target", "targets"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "icon": { "type": "string", "minLength": 1 },
+        "author": { "$ref": "#/$defs/author" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "default-target": {
+          "type": "string",
+          "enum": ["local", "hub"]
+        },
+        "targets": { "$ref": "#/$defs/targets" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "default-target": { "const": "local" } } },
+          "then": { "properties": { "targets": { "required": ["local"] } } }
+        },
+        {
+          "if": { "properties": { "default-target": { "const": "hub" } } },
+          "then": { "properties": { "targets": { "required": ["hub"] } } }
+        }
+      ]
+    }
+  }
+}
