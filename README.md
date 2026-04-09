@@ -1,6 +1,6 @@
 # Apollo Capabilities
 
-A collection of reusable [pixi](https://pixi.sh) capabilities — self-contained `pixi.toml` files that define tasks and dependencies for common workflows.
+A collection of reusable [Nebi](https://nebi.nebari.dev) capabilities — self-contained `pixi.toml` files that define a launch task and dependencies for common workflows.
 
 ## Structure
 
@@ -14,11 +14,27 @@ Each capability lives in its own directory and is a standalone pixi project.
 
 ## Usage
 
-Navigate into any capability directory and run its tasks with pixi:
+### From the OCI registry (recommended)
+
+Capabilities are published to `quay.io/openteams_capabilities`. Import one directly with [Nebi](https://nebi.nebari.dev):
+
+```sh
+nebi import quay.io/openteams_capabilities/hello-world:latest
+```
+
+Then run it:
+
+```sh
+pixi run launch
+```
+
+### Local usage
+
+Clone this repository, navigate into any capability directory, and run its tasks with pixi:
 
 ```sh
 cd capabilities/hello-world
-pixi run hello
+pixi run launch
 ```
 
 ## Adding a Capability
