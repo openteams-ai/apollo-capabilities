@@ -1,0 +1,118 @@
+name: Publish Environments
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download nebi
+        env:
+          NEBI_VERSION: "0.10.2"
+        run: |
+          curl -sL "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/nebi_${NEBI_VERSION}_linux_x86_64.tar.gz" \
+            | tar xz -C /usr/local/bin nebi
+          nebi version
+
+      - name: Start nebi server
+        env:
+          NEBI_DATABASE_DRIVER: sqlite
+          NEBI_DATABASE_DSN: /tmp/nebi.db
+          NEBI_QUEUE_TYPE: memory
+          NEBI_AUTH_JWT_SECRET: ci-ephemeral-secret
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: admin
+        run: |
+          nebi serve &
+          # Wait for server to be ready
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8460/api/v1/health > /dev/null 2>&1; then
+              echo "Server is ready"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Login to nebi
+        run: |
+          echo "admin" | nebi login http://localhost:8460 --username admin --password-stdin
+
+      - name: Add quay.io registry
+        run: |
+          echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default
+
+      - name: Push and publish environments
+        run: |
+          for pixi_toml in environments/*/pixi.toml; do
+            env_dir=$(dirname "$pixi_toml")
+            env_name=$(basename "$env_dir")
+            version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
+
+            echo "==> Publishing ${env_name}:${version}"
+            cd "$env_dir"
+            nebi push "${env_name}:${version}"
+            nebi publish "${env_name}" --registry quay --repo "${env_name}"
+
+            # Ensure the repository is public on quay.io
+            curl -sf -X POST \
+              -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{"visibility": "public"}' \
+              "https://quay.io/api/v1/repository/openteams_capabilities/${env_name}/changevisibility" \
+              && echo "  -> Set ${env_name} to public" \
+              || echo "  -> Warning: could not set ${env_name} to public (may already be public)"
+
+            cd "$GITHUB_WORKSPACE"
+          done
+
+      - name: Summary
+        run: |
+          echo "## Published Environments" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | Version | Registry | Import Command |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------|---------|----------|----------------|" >> $GITHUB_STEP_SUMMARY
+          for pixi_toml in environments/*/pixi.toml; do
+            env_name=$(basename "$(dirname "$pixi_toml")")
+            version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
+            ref="quay.io/openteams_capabilities/${env_name}:latest"
+            echo "| ${env_name} | ${version} | [quay.io](https://quay.io/repository/openteams_capabilities/${env_name}) | \`nebi import ${ref}\` |" >> $GITHUB_STEP_SUMMARY
+          done
+
+      - name: Shutdown server
+        if: always()
+        run: pkill nebi || true
+
+  import-test:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download nebi
+        env:
+          NEBI_VERSION: "0.10.2"
+        run: |
+          curl -sL "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/nebi_${NEBI_VERSION}_linux_x86_64.tar.gz" \
+            | tar xz -C /usr/local/bin nebi
+          nebi version
+
+      - name: Import environments from registry
+        run: |
+          for pixi_toml in environments/*/pixi.toml; do
+            env_name=$(basename "$(dirname "$pixi_toml")")
+            echo "==> Importing ${env_name}:latest"
+            nebi import "quay.io/openteams_capabilities/${env_name}:latest" -o "/tmp/${env_name}" --force
+
+            if [ ! -f "/tmp/${env_name}/pixi.toml" ]; then
+              echo "ERROR: pixi.toml not found after importing ${env_name}"
+              exit 1
+            fi
+            echo "  -> OK"
+          done
