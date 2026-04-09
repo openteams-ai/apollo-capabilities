@@ -29,7 +29,7 @@ pixi run hello
 
 ## `pixi.toml` Capability Schema
 
-Every capability is a standard pixi workspace with an additional `[tool.capability]` section.
+Every capability is a standard pixi workspace with an additional `[tool.nebi.capability]` section.
 
 ```toml
 [workspace]
@@ -41,31 +41,24 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 [dependencies]
 # conda-forge packages required by this capability
 
-[tool.capability]
+[tool.nebi.capability]
 spec-version = 1
-
-[tool.capability.<capability-name>]
 name = "<Human Readable Name>"
 description = "<Short description of what this capability does>"
 icon = "<URL to an icon image>"  # optional
 author = { name = "<Author>", email = "<email>" }
 deployment = ["local", "hub"]
-tags = ["tag1, "tag2"] # optional
+tags = ["tag1", "tag2"] # optional
 
 [tasks]
 launch = { cmd = "<command to run>" }
 ```
 
-### `[tool.capability]` Fields
+### `[tool.nebi.capability]` Fields
 
 | Field | Required | Description |
 |---|---|---|
 | `spec-version` | Yes | Schema version. Currently `1`. |
-
-### `[tool.capability.<name>]` Fields
-
-| Field | Required | Description |
-|---|---|---|
 | `name` | Yes | Human-readable display name. |
 | `description` | Yes | Short description of the capability. |
 | `icon` | No | URL to an icon image. |
