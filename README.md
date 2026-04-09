@@ -49,6 +49,7 @@ name = "<Human Readable Name>"
 description = "<Short description of what this capability does>"
 icon = "<URL to an icon image>"  # optional
 author = { name = "<Author>", email = "<email>" }
+tags = ["tag1, "tag2"]
 
 [tasks]
 launch = { cmd = "<command to run>" }
@@ -68,3 +69,4 @@ launch = { cmd = "<command to run>" }
 | `description` | Yes | Short description of the capability. |
 | `icon` | No | URL to an icon image. |
 | `author` | No | Author name and email. |
+| `tags` | No | Tags to support marketplace metadata. |
