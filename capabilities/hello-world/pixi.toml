@@ -5,12 +5,20 @@ description = "A minimal hello-world capability"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
-[tool.nebi.capability]
+[tool.capability.hello-world]
 spec-version = 1
 name = "Hello World"
 description = "A minimal hello world capability"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 deployment = ["local", "hub"]
+
+[tool.capability.hello-world.entrypoint]
+type = "task"
+task = "launch"
+environment = "default"
+
+[tool.capability.hello-world.execution]
+target = "local"
 
 [tasks]
 launch = { cmd = "echo 'Hello, World!'" }

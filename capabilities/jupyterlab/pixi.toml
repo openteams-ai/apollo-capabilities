@@ -11,7 +11,7 @@ pandas = ">=2.2,<3"
 polars = ">=1.0,<2"
 numpy = ">=2.0,<3"
 
-[tool.nebi.capability]
+[tool.capability.jupyterlab]
 spec-version = 1
 name = "JupyterLab"
 description = "A minimal JupyterLab capability"
@@ -19,6 +19,14 @@ icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/
 author = { name = "OpenTeams", email = "info@openteams.com" }
 deployment = ["local", "hub"]
 tags = ["jupyter", "data-science"]
+
+[tool.capability.jupyterlab.entrypoint]
+type = "task"
+task = "launch"
+environment = "default"
+
+[tool.capability.jupyterlab.execution]
+target = "local"
 
 [tasks]
 launch = { cmd = "jupyter lab $1" }

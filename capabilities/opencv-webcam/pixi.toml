@@ -1,0 +1,30 @@
+[workspace]
+name = "opencv-webcam"
+version = "0.1.0"
+description = "OpenCV webcam face detection capability"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[dependencies]
+opencv = "*"
+python = "3.10.*"
+requests = "*"
+
+[tool.capability.opencv-webcam]
+spec-version = 1
+name = "OpenCV Webcam"
+description = "Real-time webcam face detection demo using OpenCV"
+author = { name = "OpenTeams", email = "info@openteams.com" }
+deployment = ["local", "hub"]
+tags = ["opencv", "computer-vision", "webcam"]
+
+[tool.capability.opencv-webcam.entrypoint]
+type = "task"
+task = "launch"
+environment = "default"
+
+[tool.capability.opencv-webcam.execution]
+target = "local"
+
+[tasks]
+launch = "python webcam_capture.py"
