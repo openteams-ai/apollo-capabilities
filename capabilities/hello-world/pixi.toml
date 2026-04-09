@@ -12,6 +12,7 @@ spec-version = 1
 name = "Hello World"
 description = "A minimal hello world capability"
 author = { name = "OpenTeams", email = "info@openteams.com" }
+deployment = ["local", "hub"]
 
 [tasks]
-hello = { cmd = "echo 'Hello, World!'" }
+launch = { cmd = "echo 'Hello, World!'" }
