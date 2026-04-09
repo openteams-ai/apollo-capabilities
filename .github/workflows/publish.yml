@@ -55,18 +55,28 @@ jobs:
             version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
 
             echo "==> Publishing ${env_name}:${version}"
-            cd "$env_dir"
-            nebi push "${env_name}:${version}"
-            nebi publish "${env_name}" --registry quay --repo "${env_name}"
 
-            # Ensure the repository is public on quay.io
+            # Create the quay.io repo (idempotent) and ensure it's public
             curl -sf -X POST \
               -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d '{"visibility": "public"}' \
-              "https://quay.io/api/v1/repository/openteams_capabilities/${env_name}/changevisibility" \
-              && echo "  -> Set ${env_name} to public" \
-              || echo "  -> Warning: could not set ${env_name} to public (may already be public)"
+              -d "{\"namespace\":\"openteams_capabilities\",\"repository\":\"${env_name}\",\"visibility\":\"public\",\"description\":\"\"}" \
+              "https://quay.io/api/v1/repository" \
+              && echo "  -> Created ${env_name} on quay.io" \
+              || echo "  -> Repository ${env_name} already exists on quay.io"
+
+            # Grant the robot account write access so nebi publish can push blobs
+            curl -sf -X PUT \
+              -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{"role":"write"}' \
+              "https://quay.io/api/v1/repository/openteams_capabilities/${env_name}/permissions/user/${{ secrets.QUAY_USERNAME }}" \
+              && echo "  -> Granted write access to ${{ secrets.QUAY_USERNAME }}" \
+              || echo "  -> Warning: could not set write access for ${{ secrets.QUAY_USERNAME }}"
+
+            cd "$env_dir"
+            nebi push "${env_name}:${version}"
+            nebi publish "${env_name}" --registry quay --repo "${env_name}"
 
             cd "$GITHUB_WORKSPACE"
           done
