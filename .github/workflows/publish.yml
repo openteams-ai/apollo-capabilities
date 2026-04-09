@@ -1,4 +1,4 @@
-name: Publish Environments
+name: Publish Capabilities
 
 on:
   push:
@@ -47,9 +47,9 @@ jobs:
         run: |
           echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default
 
-      - name: Push and publish environments
+      - name: Push and publish capabilities
         run: |
-          for pixi_toml in environments/*/pixi.toml; do
+          for pixi_toml in capabilities/*/pixi.toml; do
             env_dir=$(dirname "$pixi_toml")
             env_name=$(basename "$env_dir")
             version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
@@ -73,11 +73,11 @@ jobs:
 
       - name: Summary
         run: |
-          echo "## Published Environments" >> $GITHUB_STEP_SUMMARY
+          echo "## Published Capabilities" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Environment | Version | Registry | Import Command |" >> $GITHUB_STEP_SUMMARY
           echo "|-------------|---------|----------|----------------|" >> $GITHUB_STEP_SUMMARY
-          for pixi_toml in environments/*/pixi.toml; do
+          for pixi_toml in capabilities/*/pixi.toml; do
             env_name=$(basename "$(dirname "$pixi_toml")")
             version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
             ref="quay.io/openteams_capabilities/${env_name}:latest"
@@ -103,9 +103,9 @@ jobs:
             | tar xz -C /usr/local/bin nebi
           nebi version
 
-      - name: Import environments from registry
+      - name: Import capabilities from registry
         run: |
-          for pixi_toml in environments/*/pixi.toml; do
+          for pixi_toml in capabilities/*/pixi.toml; do
             env_name=$(basename "$(dirname "$pixi_toml")")
             echo "==> Importing ${env_name}:latest"
             nebi import "quay.io/openteams_capabilities/${env_name}:latest" -o "/tmp/${env_name}" --force
