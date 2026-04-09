@@ -66,11 +66,13 @@ jobs:
               || echo "  -> Repository ${env_name} already exists on quay.io"
 
             # Grant the robot account write access so nebi publish can push blobs
-            curl -sf -X PUT \
+            # Robot account names contain '+' which must be URL-encoded as '%2B'
+            encoded_username=$(echo "${{ secrets.QUAY_USERNAME }}" | sed 's/+/%2B/g')
+            curl -sv -X PUT \
               -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" \
               -H "Content-Type: application/json" \
               -d '{"role":"write"}' \
-              "https://quay.io/api/v1/repository/openteams_capabilities/${env_name}/permissions/user/${{ secrets.QUAY_USERNAME }}" \
+              "https://quay.io/api/v1/repository/openteams_capabilities/${env_name}/permissions/user/${encoded_username}" \
               && echo "  -> Granted write access to ${{ secrets.QUAY_USERNAME }}" \
               || echo "  -> Warning: could not set write access for ${{ secrets.QUAY_USERNAME }}"
 
