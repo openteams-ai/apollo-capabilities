@@ -5,12 +5,22 @@ A collection of reusable [Nebi](https://nebi.nebari.dev) capabilities — self-c
 ## Structure
 
 ```
+spec/
+  README.md
+  SCHEMA.md
+  capability.schema.json
 capabilities/
   <capability-name>/
     pixi.toml
 ```
 
-Each capability lives in its own directory and is a standalone pixi project.
+Each capability lives in its own directory and is a standalone pixi project. The `spec/` directory contains the capability standard; `capabilities/` contains only capability implementations.
+
+## Included capabilities
+
+- `hello-world` — minimal capability that prints a greeting
+- `jupyterlab` — launches JupyterLab with a base data stack
+- `opencv-webcam` — webcam face detection demo (from Pixi OpenCV example, webcam capture only)
 
 ## Usage
 
@@ -40,44 +50,15 @@ pixi run launch
 ## Adding a Capability
 
 1. Create a new directory under `capabilities/`.
-2. Add a `pixi.toml` following the schema below.
+2. Add a `pixi.toml` following the specification in [`spec/SCHEMA.md`](spec/SCHEMA.md) and [`spec/capability.schema.json`](spec/capability.schema.json).
 3. Optionally add a `README.md` documenting tasks and any environment variables.
 
-## `pixi.toml` Capability Schema
+## Specification
 
-Every capability is a standard pixi workspace with an additional `[tool.nebi.capability]` section.
+The capability standard lives under [`spec/`](spec/):
 
-```toml
-[workspace]
-name = "<capability-name>"
-version = "0.1.0"
-channels = ["conda-forge"]
-platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+- [`spec/README.md`](spec/README.md) — overview of the specification artifacts
+- [`spec/SCHEMA.md`](spec/SCHEMA.md) — human-readable schema, semantics, and conventions
+- [`spec/capability.schema.json`](spec/capability.schema.json) — machine-readable JSON Schema for validating parsed manifests
 
-[dependencies]
-# conda-forge packages required by this capability
-
-[tool.nebi.capability]
-spec-version = 1
-name = "<Human Readable Name>"
-description = "<Short description of what this capability does>"
-icon = "<URL to an icon image>"  # optional
-author = { name = "<Author>", email = "<email>" }
-deployment = ["local", "hub"]
-tags = ["tag1", "tag2"] # optional
-
-[tasks]
-launch = { cmd = "<command to run>" }
-```
-
-### `[tool.nebi.capability]` Fields
-
-| Field | Required | Description |
-|---|---|---|
-| `spec-version` | Yes | Schema version. Currently `1`. |
-| `name` | Yes | Human-readable display name. |
-| `description` | Yes | Short description of the capability. |
-| `icon` | No | URL to an icon image. |
-| `author` | No | Author name and email. |
-| `deployment` | Yes | Deployment targets. Valid values: `"local"`, `"hub"`. |
-| `tags` | No | Tags to support marketplace metadata. |
+The root README intentionally keeps only a short summary so the specification does not drift across multiple copies.
