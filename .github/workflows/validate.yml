@@ -1,0 +1,59 @@
+name: Validate Capabilities
+
+on:
+  pull_request:
+    paths:
+      - "capabilities/**/pixi.toml"
+      - "spec/capability.schema.json"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install jsonschema
+        run: pip install jsonschema==4.*
+
+      - name: Validate capabilities
+        run: |
+          python - <<'EOF'
+          import sys
+          import tomllib
+          import json
+          import pathlib
+          import jsonschema
+
+          schema_path = pathlib.Path("spec/capability.schema.json")
+          schema = json.loads(schema_path.read_text())
+
+          manifests = sorted(pathlib.Path("capabilities").glob("*/pixi.toml"))
+          if not manifests:
+              print("No capabilities found to validate.")
+              sys.exit(0)
+
+          errors = []
+          for manifest in manifests:
+              print(f"Validating {manifest} ...", end=" ")
+              data = tomllib.loads(manifest.read_text())
+              try:
+                  jsonschema.validate(instance=data, schema=schema)
+                  print("OK")
+              except jsonschema.ValidationError as e:
+                  print("FAILED")
+                  errors.append(f"{manifest}: {e.message} (path: {' -> '.join(str(p) for p in e.absolute_path)})")
+
+          if errors:
+              print("\nValidation errors:")
+              for err in errors:
+                  print(f"  - {err}")
+              sys.exit(1)
+
+          print(f"\nAll {len(manifests)} capability manifest(s) are valid.")
+          EOF
