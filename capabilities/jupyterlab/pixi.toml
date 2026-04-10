@@ -17,16 +17,18 @@ name = "JupyterLab"
 description = "A minimal JupyterLab capability"
 icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/docs/source/_static/jupyter_logo.svg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
-deployment = ["local", "hub"]
 tags = ["jupyter", "data-science"]
 
-[tool.capability.jupyterlab.entrypoint]
-type = "task"
+[tool.capability.jupyterlab.execution]
+default-target = "local"
+
+[tool.capability.jupyterlab.execution.targets.local]
 task = "launch"
 environment = "default"
 
-[tool.capability.jupyterlab.execution]
-target = "local"
+[tool.capability.jupyterlab.execution.targets.hub]
+task = "launch"
+environment = "default"
 
 [tasks]
 launch = { cmd = "jupyter lab $1" }

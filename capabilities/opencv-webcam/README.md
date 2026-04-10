@@ -2,6 +2,8 @@
 
 A capability based on the Pixi OpenCV example (webcam capture only).
 
+This capability supports local execution only because it requires webcam and display access.
+
 ## What it does
 
 - Opens an available webcam

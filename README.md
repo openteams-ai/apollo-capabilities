@@ -53,7 +53,7 @@ pixi run launch
 
 For the complete schema reference, see [`capabilities/SCHEMA.md`](capabilities/SCHEMA.md).
 
-Every capability is a standard pixi workspace with an additional keyed capability section under `[tool.capability.<capability-key>]` (for example, `[tool.capability.jupyterlab]`).
+Every capability is a standard pixi workspace with an additional keyed capability section under `[tool.capability.<capability-key>]` (for example, `[tool.capability.jupyterlab]`). Launch is always done through Pixi tasks; task execution is implicit in the schema.
 
 ```toml
 [workspace]
@@ -71,19 +71,22 @@ name = "<Human Readable Name>"
 description = "<Short description of what this capability does>"
 icon = "<URL to an icon image>"  # optional
 author = { name = "<Author>", email = "<email>" }
-deployment = ["local", "hub"]
 tags = ["tag1", "tag2"] # optional
 
-[tool.capability.<capability-key>.entrypoint]
-type = "task"
+[tool.capability.<capability-key>.execution]
+default-target = "local"
+
+[tool.capability.<capability-key>.execution.targets.local]
 task = "launch"
 environment = "default" # optional, defaults to "default"
 
-[tool.capability.<capability-key>.execution]
-target = "local" # local | hub
+[tool.capability.<capability-key>.execution.targets.hub]
+task = "launch-hub"
+environment = "default" # optional, defaults to "default"
 
 [tasks]
 launch = { cmd = "<command to run>" }
+launch-hub = { cmd = "<command to run on hub>" } # optional
 ```
 
 ### `[tool.capability.<capability-key>]` Fields
@@ -95,25 +98,23 @@ launch = { cmd = "<command to run>" }
 | `description` | Yes | Short description of the capability. |
 | `icon` | No | URL to an icon image. |
 | `author` | No | Author name and email. |
-| `deployment` | Yes | Deployment targets. Valid values: `"local"`, `"hub"`. |
 | `tags` | No | Tags to support marketplace metadata. |
-
-### `[tool.capability.<capability-key>.entrypoint]` Fields
-
-| Field | Required | Description |
-|---|---|---|
-| `type` | Yes | Entrypoint type. Currently `"task"`. |
-| `task` | Yes | Pixi task to run when launching the capability. |
-| `environment` | No | Pixi environment to run in. Defaults to `"default"`. |
 
 ### `[tool.capability.<capability-key>.execution]` Fields
 
 | Field | Required | Description |
 |---|---|---|
-| `target` | Yes | Execution target. Valid values: `"local"`, `"hub"`. |
+| `default-target` | Yes | Default execution target. Must match a key under `execution.targets`. Valid values are currently `"local"` and `"hub"`. |
+
+### `[tool.capability.<capability-key>.execution.targets.<target>]` Fields
+
+| Field | Required | Description |
+|---|---|---|
+| `task` | Yes | Pixi task to run when launching on this target. |
+| `environment` | No | Pixi environment to run in. Defaults to `"default"`. |
 
 ### Capability key + compatibility note
 
 The `<capability-key>` should be the capability identifier (typically the workspace name), e.g. `jupyterlab` in `[tool.capability.jupyterlab]`.
 
-For unreleased manifests still on `spec-version = 1`, older runtimes may continue to infer defaults (`launch` + `local`) when explicit `entrypoint`/`execution` fields are missing. New capabilities should set these fields explicitly.
+For unreleased manifests still on `spec-version = 1`, older runtimes may continue to project legacy `entrypoint`, `deployment`, and `execution.target` fields into this shape. New capabilities should define `execution.targets` explicitly.

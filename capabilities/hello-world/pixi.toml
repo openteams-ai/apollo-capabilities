@@ -10,15 +10,17 @@ spec-version = 1
 name = "Hello World"
 description = "A minimal hello world capability"
 author = { name = "OpenTeams", email = "info@openteams.com" }
-deployment = ["local", "hub"]
 
-[tool.capability.hello-world.entrypoint]
-type = "task"
+[tool.capability.hello-world.execution]
+default-target = "local"
+
+[tool.capability.hello-world.execution.targets.local]
 task = "launch"
 environment = "default"
 
-[tool.capability.hello-world.execution]
-target = "local"
+[tool.capability.hello-world.execution.targets.hub]
+task = "launch"
+environment = "default"
 
 [tasks]
 launch = { cmd = "echo 'Hello, World!'" }

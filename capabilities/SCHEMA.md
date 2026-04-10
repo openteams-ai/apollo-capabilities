@@ -3,10 +3,12 @@
 Apollo capabilities are Pixi manifests (`pixi.toml`) with keyed capability metadata under:
 
 - `[tool.capability.<capability-key>]`
-- `[tool.capability.<capability-key>.entrypoint]`
 - `[tool.capability.<capability-key>.execution]`
+- `[tool.capability.<capability-key>.execution.targets.<target>]`
 
 > Note: This repo is still unreleased, so the schema remains on `spec-version = 1`.
+>
+> Capabilities are launched via Pixi tasks; task execution is implicit in the schema.
 
 ## Full shape
 
@@ -23,19 +25,22 @@ name = "<Human Readable Name>"
 description = "<Short description>"
 icon = "<URL>" # optional
 author = { name = "<Name>", email = "<email>" } # optional
-deployment = ["local", "hub"]
 tags = ["tag1", "tag2"] # optional
 
-[tool.capability.<capability-key>.entrypoint]
-type = "task"
+[tool.capability.<capability-key>.execution]
+default-target = "local"
+
+[tool.capability.<capability-key>.execution.targets.local]
 task = "launch"
 environment = "default" # optional, defaults to default
 
-[tool.capability.<capability-key>.execution]
-target = "local" # local | hub
+[tool.capability.<capability-key>.execution.targets.hub]
+task = "launch-hub"
+environment = "default" # optional, defaults to default
 
 [tasks]
 launch = { cmd = "<command>" }
+launch-hub = { cmd = "<command>" } # optional, only if hub differs
 ```
 
 ## Field reference
@@ -49,22 +54,29 @@ launch = { cmd = "<command>" }
 | `description` | Yes | Short capability description. |
 | `icon` | No | Icon URL. |
 | `author` | No | Author metadata (`name`, `email`). |
-| `deployment` | Yes | Supported deployment targets. Values: `local`, `hub`. |
 | `tags` | No | Discovery/marketplace tags. |
-
-## `[tool.capability.<capability-key>.entrypoint]`
-
-| Field | Required | Description |
-|---|---|---|
-| `type` | Yes | Entrypoint kind. Currently only `task`. |
-| `task` | Yes | Pixi task name used to launch capability. |
-| `environment` | No | Pixi environment name. Defaults to `default`. |
 
 ## `[tool.capability.<capability-key>.execution]`
 
 | Field | Required | Description |
 |---|---|---|
-| `target` | Yes | Preferred execution target (`local` or `hub`). |
+| `default-target` | Yes | Default execution target. Must match a key under `execution.targets`. Valid target values are currently `local` and `hub`. |
+
+## `[tool.capability.<capability-key>.execution.targets.<target>]`
+
+| Field | Required | Description |
+|---|---|---|
+| `task` | Yes | Pixi task name used to launch the capability on this target. |
+| `environment` | No | Pixi environment name. Defaults to `default`. |
+
+## Supported target keys
+
+`<target>` is currently one of:
+
+- `local`
+- `hub`
+
+A capability supports exactly the targets it defines under `execution.targets`.
 
 ## Capability key
 
@@ -76,9 +88,17 @@ Example:
 
 ## Compatibility defaults
 
-Older manifests that omit explicit sections can still be interpreted with defaults:
+Older manifests that used `entrypoint`, `deployment`, and `execution.target` can still be projected into the new shape:
 
-- `entrypoint.type = "task"`
-- `entrypoint.task = "launch"`
-- `entrypoint.environment = "default"`
-- `execution.target = "local"` if present in `deployment`, otherwise first deployment value
+- `entrypoint.task` -> each projected target's `task`
+- `entrypoint.environment` -> each projected target's `environment`
+- `deployment` -> the set of projected target keys
+- `execution.target` -> `execution.default-target`
+
+When older fields are omitted, runtimes may continue to infer:
+
+- `task = "launch"`
+- `environment = "default"`
+- `default-target = "local"` if `local` is declared, otherwise the first declared target
+
+New manifests should define `execution.targets` explicitly.
