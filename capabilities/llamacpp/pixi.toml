@@ -1,11 +1,26 @@
 [workspace]
-name = "apollo-desktop"
+name = "llamacpp"
+version = "0.1.0"
+description = "Local llama.cpp inference server with auto-downloaded binaries and model"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
-version = "0.1.0"
 
 [dependencies]
 python = "3.12.*"
+
+[tool.capability]
+spec-version = "0.1.0"
+
+[tool.capability.openteams.llamacpp]
+name = "llama.cpp Local Server"
+description = "OpenAI-compatible local inference server. Auto-detects OS/arch/GPU, downloads the matching llama.cpp build and model GGUFs, then serves on llama.cpp's default port 8080."
+author = { name = "OpenTeams", email = "info@openteams.com" }
+tags = ["llm", "inference", "llama.cpp", "local"]
+default-target = "local"
+
+[tool.capability.openteams.llamacpp.targets.local]
+task = "serve"
+environment = "default"
 
 # ===========================================================================
 # Shared tasks (platform-independent)
@@ -14,7 +29,7 @@ python = "3.12.*"
 
 test-message = '''python -c "
 import urllib.request, json
-req = urllib.request.Request('http://localhost:5000/v1/chat/completions',
+req = urllib.request.Request('http://localhost:8080/v1/chat/completions',
     data=json.dumps({'model':'default','messages':[{'role':'user','content':'Hello! Who are you?'}],'max_tokens':4096}).encode(),
     headers={'Content-Type':'application/json'})
 resp = json.loads(urllib.request.urlopen(req).read())
@@ -198,7 +213,6 @@ serve = { cmd = """LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
   --mmproj models/mmproj-BF16.gguf \
   -c 4096 \
   --n-gpu-layers 0 \
-  --port 5000 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1""", depends-on = ["download"] }
 
@@ -208,7 +222,6 @@ serve = { cmd = """bin/llama-server \
   --mmproj models/mmproj-BF16.gguf \
   -c 4096 \
   --n-gpu-layers 0 \
-  --port 5000 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1""", depends-on = ["download"] }
 
@@ -218,7 +231,6 @@ serve = { cmd = '''bin\llama-server.exe \
   --mmproj models\mmproj-BF16.gguf \
   -c 4096 \
   --n-gpu-layers 0 \
-  --port 5000 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1''', depends-on = ["download"] }
 
@@ -374,7 +386,6 @@ serve = { cmd = """LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
   -fa on \
   -c 24000 \
   --n-gpu-layers 999 \
-  --port 5000 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -mg 0 -np 1""", depends-on = ["download"] }
 
@@ -386,7 +397,6 @@ serve = { cmd = """bin/llama-server \
   -fa on \
   -c 24000 \
   --n-gpu-layers 999 \
-  --port 5000 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1""", depends-on = ["download"] }
 
@@ -397,7 +407,6 @@ serve = { cmd = '''set PATH=bin;%PATH% && bin\llama-server.exe \
   -fa on \
   -c 24000 \
   --n-gpu-layers 999 \
-  --port 5000 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -mg 0 -np 1''', depends-on = ["download"] }
 
