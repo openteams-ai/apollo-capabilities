@@ -1,5 +1,7 @@
 # Capability Schema (spec-version = "0.1.0")
 
+This document is the human-readable specification for Apollo capability metadata. A machine-readable companion schema lives at [`capability.schema.json`](capability.schema.json).
+
 Apollo capabilities are Pixi manifests (`pixi.toml`) with keyed capability metadata under:
 
 - `[tool.capability.<capability-key>]`
@@ -85,6 +87,15 @@ A capability supports exactly the targets it defines under `execution.targets`.
 Example:
 
 - `[tool.capability.jupyterlab]`
+
+## Validation
+
+The JSON Schema in [`capability.schema.json`](capability.schema.json) validates the current manifest shape after TOML has been parsed into a generic data structure.
+
+Some constraints are still documented here rather than enforced in JSON Schema, including:
+
+- `<capability-key>` should typically match `workspace.name`
+- legacy manifest projection behavior used by older runtimes
 
 ## Compatibility defaults
 
