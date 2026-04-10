@@ -66,7 +66,7 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 # conda-forge packages required by this capability
 
 [tool.capability.<capability-key>]
-spec-version = 1
+spec-version = "0.1.0"
 name = "<Human Readable Name>"
 description = "<Short description of what this capability does>"
 icon = "<URL to an icon image>"  # optional
@@ -93,7 +93,7 @@ launch-hub = { cmd = "<command to run on hub>" } # optional
 
 | Field | Required | Description |
 |---|---|---|
-| `spec-version` | Yes | Schema version. Currently `1`. |
+| `spec-version` | Yes | Schema version as a semver-style string. Currently `"0.1.0"` to indicate the schema is still under development. |
 | `name` | Yes | Human-readable display name. |
 | `description` | Yes | Short description of the capability. |
 | `icon` | No | URL to an icon image. |
@@ -117,4 +117,4 @@ launch-hub = { cmd = "<command to run on hub>" } # optional
 
 The `<capability-key>` should be the capability identifier (typically the workspace name), e.g. `jupyterlab` in `[tool.capability.jupyterlab]`.
 
-For unreleased manifests still on `spec-version = 1`, older runtimes may continue to project legacy `entrypoint`, `deployment`, and `execution.target` fields into this shape. New capabilities should define `execution.targets` explicitly.
+For unreleased manifests, the schema uses `spec-version = "0.1.0"` to make its pre-1.0, evolving status explicit. Older runtimes may continue to project legacy `entrypoint`, `deployment`, and `execution.target` fields into this shape. New capabilities should define `execution.targets` explicitly.

@@ -12,7 +12,7 @@ polars = ">=1.0,<2"
 numpy = ">=2.0,<3"
 
 [tool.capability.jupyterlab]
-spec-version = 1
+spec-version = "0.1.0"
 name = "JupyterLab"
 description = "A minimal JupyterLab capability"
 icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/docs/source/_static/jupyter_logo.svg"

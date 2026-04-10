@@ -11,7 +11,7 @@ python = "3.10.*"
 requests = "*"
 
 [tool.capability.opencv-webcam]
-spec-version = 1
+spec-version = "0.1.0"
 name = "OpenCV Webcam"
 description = "Real-time webcam face detection demo using OpenCV"
 author = { name = "OpenTeams", email = "info@openteams.com" }

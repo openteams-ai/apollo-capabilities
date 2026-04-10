@@ -1,4 +1,4 @@
-# Capability Schema (spec-version = 1)
+# Capability Schema (spec-version = "0.1.0")
 
 Apollo capabilities are Pixi manifests (`pixi.toml`) with keyed capability metadata under:
 
@@ -6,7 +6,7 @@ Apollo capabilities are Pixi manifests (`pixi.toml`) with keyed capability metad
 - `[tool.capability.<capability-key>.execution]`
 - `[tool.capability.<capability-key>.execution.targets.<target>]`
 
-> Note: This repo is still unreleased, so the schema remains on `spec-version = 1`.
+> Note: This repo is still unreleased, so the schema uses `spec-version = "0.1.0"` to make its pre-1.0 status explicit.
 >
 > Capabilities are launched via Pixi tasks; task execution is implicit in the schema.
 
@@ -20,7 +20,7 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 
 [tool.capability.<capability-key>]
-spec-version = 1
+spec-version = "0.1.0"
 name = "<Human Readable Name>"
 description = "<Short description>"
 icon = "<URL>" # optional
@@ -49,7 +49,7 @@ launch-hub = { cmd = "<command>" } # optional, only if hub differs
 
 | Field | Required | Description |
 |---|---|---|
-| `spec-version` | Yes | Schema version (currently `1`). |
+| `spec-version` | Yes | Schema version as a semver-style string (currently `"0.1.0"`). A pre-1.0 value signals the schema is still evolving. |
 | `name` | Yes | Human-readable display name. |
 | `description` | Yes | Short capability description. |
 | `icon` | No | Icon URL. |
