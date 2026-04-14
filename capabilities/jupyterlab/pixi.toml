@@ -26,9 +26,5 @@ default-target = "local"
 task = "launch"
 environment = "default"
 
-[tool.nebi.capability.openteams.jupyterlab.targets.hub]
-task = "launch"
-environment = "default"
-
 [tasks]
 launch = { cmd = "jupyter lab $1" }

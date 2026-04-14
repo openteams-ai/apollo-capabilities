@@ -18,9 +18,5 @@ default-target = "local"
 task = "launch"
 environment = "default"
 
-[tool.nebi.capability.openteams.hello-world.targets.hub]
-task = "launch"
-environment = "default"
-
 [tasks]
 launch = { cmd = "echo 'Hello, World!'" }
