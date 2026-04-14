@@ -20,4 +20,4 @@ The JSON Schema validates the current manifest structure. The Markdown spec docu
 
 The current schema version is `"0.1.0"`, which intentionally signals that the standard is still pre-1.0 and may evolve.
 
-Capability metadata is declared under `tool.capability`, with capability entries namespaced as `tool.capability.<org-name>.<capability-key>`.
+Capability metadata is declared under `tool.nebi.capability`, with capability entries namespaced as `tool.nebi.capability.<org-name>.<capability-key>`.

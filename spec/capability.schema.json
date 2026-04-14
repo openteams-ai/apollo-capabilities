@@ -37,18 +37,25 @@
     },
     "tool": {
       "type": "object",
-      "required": ["capability"],
+      "required": ["nebi"],
       "properties": {
-        "capability": {
+        "nebi": {
           "type": "object",
-          "required": ["spec-version"],
+          "required": ["capability"],
           "properties": {
-            "spec-version": { "const": "0.1.0" }
+            "capability": {
+              "type": "object",
+              "required": ["spec-version"],
+              "properties": {
+                "spec-version": { "const": "0.1.0" }
+              },
+              "patternProperties": {
+                "^(?!spec-version$)[A-Za-z0-9][A-Za-z0-9_-]*$": { "$ref": "#/$defs/orgNamespace" }
+              },
+              "additionalProperties": false
+            }
           },
-          "patternProperties": {
-            "^(?!spec-version$)[A-Za-z0-9][A-Za-z0-9_-]*$": { "$ref": "#/$defs/orgNamespace" }
-          },
-          "additionalProperties": false
+          "additionalProperties": true
         }
       },
       "additionalProperties": true
