@@ -11,10 +11,10 @@ pandas = ">=2.2,<3"
 polars = ">=1.0,<2"
 numpy = ">=2.0,<3"
 
-[tool.capability]
+[tool.nebi.capability]
 spec-version = "0.1.0"
 
-[tool.capability.openteams.jupyterlab]
+[tool.nebi.capability.openteams.jupyterlab]
 name = "JupyterLab"
 description = "A minimal JupyterLab capability"
 icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/docs/source/_static/jupyter_logo.svg"
@@ -22,11 +22,11 @@ author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["jupyter", "data-science"]
 default-target = "local"
 
-[tool.capability.openteams.jupyterlab.targets.local]
+[tool.nebi.capability.openteams.jupyterlab.targets.local]
 task = "launch"
 environment = "default"
 
-[tool.capability.openteams.jupyterlab.targets.hub]
+[tool.nebi.capability.openteams.jupyterlab.targets.hub]
 task = "launch"
 environment = "default"
 

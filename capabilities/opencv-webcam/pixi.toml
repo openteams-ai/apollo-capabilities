@@ -10,17 +10,17 @@ opencv = "*"
 python = "3.10.*"
 requests = "*"
 
-[tool.capability]
+[tool.nebi.capability]
 spec-version = "0.1.0"
 
-[tool.capability.openteams.opencv-webcam]
+[tool.nebi.capability.openteams.opencv-webcam]
 name = "OpenCV Webcam"
 description = "Real-time webcam face detection demo using OpenCV"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["opencv", "computer-vision", "webcam"]
 default-target = "local"
 
-[tool.capability.openteams.opencv-webcam.targets.local]
+[tool.nebi.capability.openteams.opencv-webcam.targets.local]
 task = "launch"
 environment = "default"
 
