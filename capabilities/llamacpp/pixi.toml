@@ -8,17 +8,17 @@ platforms = ["linux-64", "osx-arm64", "win-64"]
 [dependencies]
 python = "3.12.*"
 
-[tool.capability]
+[tool.nebi.capability]
 spec-version = "0.1.0"
 
-[tool.capability.openteams.llamacpp]
+[tool.nebi.capability.openteams.llamacpp]
 name = "llama.cpp Local Server"
 description = "OpenAI-compatible local inference server. Auto-detects OS/arch/GPU, downloads the matching llama.cpp build and model GGUFs, then serves on llama.cpp's default port 8080."
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["llm", "inference", "llama.cpp", "local"]
 default-target = "local"
 
-[tool.capability.openteams.llamacpp.targets.local]
+[tool.nebi.capability.openteams.llamacpp.targets.local]
 task = "serve"
 environment = "default"
 
