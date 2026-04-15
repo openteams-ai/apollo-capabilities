@@ -42,34 +42,6 @@ print('--- USAGE ---')
 print(resp.get('usage', {}))
 " '''
 
-download-model = '''python -c "
-import urllib.request, os, sys
-models_dir = 'models'
-os.makedirs(models_dir, exist_ok=True)
-dest = os.path.join(models_dir, 'gemma-4-26B-A4B-it-UD-Q4_K_M.gguf')
-if os.path.exists(dest):
-    print(f'Model already present at {dest}, skipping.')
-    sys.exit(0)
-url = 'https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf?download=true'
-print(f'Downloading model to {dest} (this may take a while)...')
-urllib.request.urlretrieve(url, dest, reporthook=lambda c,bs,ts: print(f'  {c*bs/(1024**3):.2f} GB downloaded', end='\r') if ts>0 else None)
-print(f'\nModel downloaded to {dest}')
-" '''
-
-download-mmproj = '''python -c "
-import urllib.request, os, sys
-models_dir = 'models'
-os.makedirs(models_dir, exist_ok=True)
-dest = os.path.join(models_dir, 'mmproj-BF16.gguf')
-if os.path.exists(dest):
-    print(f'mmproj already present at {dest}, skipping.')
-    sys.exit(0)
-url = 'https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/mmproj-BF16.gguf?download=true'
-print(f'Downloading mmproj to {dest}...')
-urllib.request.urlretrieve(url, dest, reporthook=lambda c,bs,ts: print(f'  {c*bs/(1024**2):.1f} MB downloaded', end='\r') if ts>0 else None)
-print(f'\nmmproj downloaded to {dest}')
-" '''
-
 # ===========================================================================
 # CPU feature (default) — no GPU acceleration
 # ===========================================================================
@@ -205,34 +177,35 @@ if sys.platform == 'win32' and BACKEND == 'gpu':
         os.remove(cn)
 " ''', env = { LLAMA_BACKEND = "cpu" } }
 
-download = { cmd = "echo 'All downloads complete.'", depends-on = ["download-llamacpp", "download-model", "download-mmproj"] }
-
-[feature.cpu.target.linux-64.tasks]
-serve = { cmd = """LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
-  -m models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
-  --mmproj models/mmproj-BF16.gguf \
+[feature.cpu.target.linux-64.tasks.serve]
+args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
+cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
+  -hf "{{ model }}" \
   -c 4096 \
   --n-gpu-layers 0 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1""", depends-on = ["download"] }
+  --jinja --temp 0.7 -np 1"""
+depends-on = ["download-llamacpp"]
 
-[feature.cpu.target.osx-arm64.tasks]
-serve = { cmd = """bin/llama-server \
-  -m models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
-  --mmproj models/mmproj-BF16.gguf \
+[feature.cpu.target.osx-arm64.tasks.serve]
+args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
+cmd = """HF_HOME=models bin/llama-server \
+  -hf "{{ model }}" \
   -c 4096 \
   --n-gpu-layers 0 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1""", depends-on = ["download"] }
+  --jinja --temp 0.7 -np 1"""
+depends-on = ["download-llamacpp"]
 
-[feature.cpu.target.win-64.tasks]
-serve = { cmd = '''bin\llama-server.exe \
-  -m models\gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
-  --mmproj models\mmproj-BF16.gguf \
+[feature.cpu.target.win-64.tasks.serve]
+args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
+cmd = '''HF_HOME=models bin/llama-server \
+  -hf "{{ model }}" \
   -c 4096 \
   --n-gpu-layers 0 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1''', depends-on = ["download"] }
+  --jinja --temp 0.7 -np 1'''
+depends-on = ["download-llamacpp"]
 
 # ===========================================================================
 # GPU feature — Vulkan on Linux, Metal on macOS, CUDA on Windows
@@ -377,38 +350,39 @@ if sys.platform == 'win32' and BACKEND == 'gpu':
         os.remove(cn)
 " ''', env = { LLAMA_BACKEND = "gpu" } }
 
-download = { cmd = "echo 'All downloads complete.'", depends-on = ["download-llamacpp", "download-model", "download-mmproj"] }
-
-[feature.gpu.target.linux-64.tasks]
-serve = { cmd = """LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
-  -m models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
-  --mmproj models/mmproj-BF16.gguf \
+[feature.gpu.target.linux-64.tasks.serve]
+args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
+cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
+  -hf "{{ model }}" \
   -fa on \
   -c 24000 \
   --n-gpu-layers 999 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -mg 0 -np 1""", depends-on = ["download"] }
+  --jinja --temp 0.7 -mg 0 -np 1"""
+depends-on = ["download-llamacpp"]
 
-[feature.gpu.target.osx-arm64.tasks]
+[feature.gpu.target.osx-arm64.tasks.serve]
 # macOS Metal is built-in; -ngl 999 offloads to Apple GPU
-serve = { cmd = """bin/llama-server \
-  -m models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
-  --mmproj models/mmproj-BF16.gguf \
+args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
+cmd = """HF_HOME=models bin/llama-server \
+  -hf "{{ model }}" \
   -fa on \
   -c 24000 \
   --n-gpu-layers 999 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1""", depends-on = ["download"] }
+  --jinja --temp 0.7 -np 1"""
+depends-on = ["download-llamacpp"]
 
-[feature.gpu.target.win-64.tasks]
-serve = { cmd = '''set PATH=bin;%PATH% && bin\llama-server.exe \
-  -m models\gemma-4-26B-A4B-it-UD-Q4_K_M.gguf \
-  --mmproj models\mmproj-BF16.gguf \
+[feature.gpu.target.win-64.tasks.serve]
+args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
+cmd = '''HF_HOME=models PATH="bin:$PATH" bin/llama-server \
+  -hf "{{ model }}" \
   -fa on \
   -c 24000 \
   --n-gpu-layers 999 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -mg 0 -np 1''', depends-on = ["download"] }
+  --jinja --temp 0.7 -mg 0 -np 1'''
+depends-on = ["download-llamacpp"]
 
 # ===========================================================================
 # Environments
