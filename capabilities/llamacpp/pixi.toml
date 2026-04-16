@@ -181,7 +181,7 @@ if sys.platform == 'win32' and BACKEND == 'gpu':
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
 cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
   -hf "{{ model }}" \
-  -c 4096 \
+  -c 8192 \
   --n-gpu-layers 0 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1"""
@@ -191,7 +191,7 @@ depends-on = ["download-llamacpp"]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
 cmd = """HF_HOME=models bin/llama-server \
   -hf "{{ model }}" \
-  -c 4096 \
+  -c 8192 \
   --n-gpu-layers 0 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1"""
@@ -201,7 +201,7 @@ depends-on = ["download-llamacpp"]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
 cmd = """HF_HOME=models bin/llama-server \
   -hf "{{ model }}" \
-  -c 4096 \
+  -c 8192 \
   --n-gpu-layers 0 \
   --top-k 20 --top-p 0.95 --min-p 0.0 \
   --jinja --temp 0.7 -np 1"""
