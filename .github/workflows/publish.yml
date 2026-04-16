@@ -52,7 +52,7 @@ jobs:
           for pixi_toml in capabilities/*/pixi.toml; do
             env_dir=$(dirname "$pixi_toml")
             env_name=$(basename "$env_dir")
-            version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
+            version=$(grep '^version = ' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
 
             echo "==> Publishing ${env_name}:${version}"
 
@@ -91,7 +91,7 @@ jobs:
           echo "|-------------|---------|----------|----------------|" >> $GITHUB_STEP_SUMMARY
           for pixi_toml in capabilities/*/pixi.toml; do
             env_name=$(basename "$(dirname "$pixi_toml")")
-            version=$(grep '^version' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
+            version=$(grep '^version = ' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
             ref="quay.io/openteams_capabilities/${env_name}:latest"
             echo "| ${env_name} | ${version} | [quay.io](https://quay.io/repository/openteams_capabilities/${env_name}) | \`nebi import ${ref}\` |" >> $GITHUB_STEP_SUMMARY
           done
