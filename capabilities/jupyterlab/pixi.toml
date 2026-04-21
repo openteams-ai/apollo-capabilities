@@ -28,4 +28,4 @@ environment = "default"
 runs-in = "browser"
 
 [tasks]
-launch = { cmd = "jupyter lab $1" }
+launch = { cmd = "jupyter lab --no-browser $1" }
