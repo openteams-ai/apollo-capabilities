@@ -23,6 +23,7 @@ default-target = "local"
 [tool.nebi.capability.openteams.opencv-webcam.targets.local]
 task = "launch"
 environment = "default"
+runs-in = "background"
 
 [tasks]
 launch = "python webcam_capture.py"

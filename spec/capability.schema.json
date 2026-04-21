@@ -94,7 +94,12 @@
       "required": ["task"],
       "properties": {
         "task": { "type": "string", "minLength": 1 },
-        "environment": { "type": "string", "minLength": 1 }
+        "environment": { "type": "string", "minLength": 1 },
+        "runs-in": {
+          "type": "string",
+          "enum": ["app", "browser", "background"],
+          "description": "How the capability surfaces to the user. 'app' opens a native window, 'browser' opens a web URL, 'background' runs without a UI."
+        }
       },
       "additionalProperties": false
     },

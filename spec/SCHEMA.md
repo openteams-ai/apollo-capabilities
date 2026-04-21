@@ -39,10 +39,12 @@ default-target = "local"
 [tool.nebi.capability.<org-name>.<capability-key>.targets.local]
 task = "launch"
 environment = "default" # optional, defaults to default
+runs-in = "browser" # optional: "app" | "browser" | "background"
 
 [tool.nebi.capability.<org-name>.<capability-key>.targets.hub]
 task = "launch-hub"
 environment = "default" # optional, defaults to default
+runs-in = "browser" # optional: "app" | "browser" | "background"
 
 [tasks]
 launch = { cmd = "<command>" }
@@ -74,6 +76,7 @@ launch-hub = { cmd = "<command>" } # optional, only if hub differs
 |---|---|---|
 | `task` | Yes | Pixi task name used to launch the capability on this target. |
 | `environment` | No | Pixi environment name. Defaults to `default`. |
+| `runs-in` | No | How the capability surfaces to the user. One of `"app"` (native window), `"browser"` (opens a web URL), or `"background"` (no UI). |
 
 ## Namespace keys
 

@@ -21,6 +21,7 @@ default-target = "local"
 [tool.nebi.capability.openteams.llamacpp.targets.local]
 task = "serve"
 environment = "default"
+runs-in = "background"
 
 # ===========================================================================
 # Shared tasks (platform-independent)
