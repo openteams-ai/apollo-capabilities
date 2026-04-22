@@ -5,14 +5,12 @@ A [pixi](https://pixi.sh)-based workflow installs [ComfyUI](https://github.com/c
 Requires: `pixi` ([install](https://pixi.sh/latest/#installation))
 
 ```bash
-# One-time: install ComfyUI, resolve torch for the local GPU, pull default models
-pixi run initialize
-
-# Launch the GUI (ComfyUI's default port 8188)
+# End-to-end: install (if needed), pull default models (if needed), launch GUI.
+# Default port: 8188.
 pixi run serve
 ```
 
-`initialize` clones the latest ComfyUI release into `./ComfyUI/`, installs torch and all requirements via `comfy install --fast-deps`, and downloads the z_image_turbo diffusion model, qwen_3_4b text encoder, and ae VAE into `ComfyUI/models/`. Existing files are skipped on re-run.
+On first run `serve` clones the latest ComfyUI release into `./ComfyUI/`, installs torch and all requirements via `comfy install --fast-deps`, and downloads the z_image_turbo diffusion model, qwen_3_4b text encoder, and ae VAE into `ComfyUI/models/`. On subsequent runs those steps short-circuit on existing files and the GUI launches immediately.
 
 | Platform | Backend |
 |---|---|
@@ -26,6 +24,6 @@ On first launch the GUI opens to ComfyUI's built-in default graph. To run z_imag
 
 ### Sub-tasks
 
-To re-run a single stage: `pixi run install-comfyui` or `pixi run download-models`.
+To run setup without launching the GUI: `pixi run initialize` (install + model download only). To re-run a single stage: `pixi run install-comfyui` or `pixi run download-models`.
 
 Analytics/tracking is disabled via `comfy tracking disable` before every install and launch.

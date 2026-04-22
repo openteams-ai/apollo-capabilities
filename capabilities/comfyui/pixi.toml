@@ -37,11 +37,15 @@ comfy-cli = "*"
 # ===========================================================================
 # Tasks
 #
-# Two-stage flow:
-#   1. `pixi run initialize` — installs ComfyUI via comfy-cli (which clones
-#      the repo, uv-installs the GPU-specific PyTorch wheel and all
-#      requirements) and then fetches the default z_image_turbo model set.
-#   2. `pixi run serve` — launches ComfyUI via `comfy launch`.
+# `pixi run serve` is end-to-end: it resolves the full DAG —
+#   install-comfyui  →  download-models  →  comfy launch
+# On subsequent runs `comfy install` short-circuits on an existing
+# ./ComfyUI/ tree and `download-models` skips files already on disk, so
+# repeat invocations just launch the GUI.
+#
+# `pixi run initialize` is retained as a setup-only alias — it runs the
+# same install + download chain without launching, useful for provisioning
+# or CI steps where the GUI should not start.
 #
 # `install-comfyui` is overridden per-platform below so that the correct
 # GPU flag is passed to `comfy install` (comfy-cli does NOT auto-detect;
@@ -82,15 +86,16 @@ for url, dest in DOWNLOADS:
 print('All default model downloads complete.')
 " ''', depends-on = ["install-comfyui"] }
 
-# Stage 1 orchestrator — installs ComfyUI and fetches default models in
-# one command.
+# Setup-only alias — runs install + model download without launching.
+# Useful for provisioning / CI.
 initialize = { cmd = "echo 'Initialization complete. Run: pixi run serve'", depends-on = ["install-comfyui", "download-models"] }
 
-# Stage 2 — launches ComfyUI. `--here` ties the launch to the ./ComfyUI/
-# workspace rather than trying to pick up a recent install elsewhere.
-# Extra arguments for main.py (e.g. `-- --listen 0.0.0.0`) can be appended
-# on the pixi command line.
-serve = "comfy tracking disable && comfy --here launch"
+# Full e2e — installs ComfyUI (if needed), fetches default models
+# (skipping any already present), then launches the GUI. `--here` ties
+# the launch to ./ComfyUI/ rather than trying to pick up a recent install
+# elsewhere. Extra arguments for main.py (e.g. `-- --listen 0.0.0.0`)
+# can be appended on the pixi command line.
+serve = { cmd = "comfy tracking disable && comfy --here launch", depends-on = ["install-comfyui", "download-models"] }
 
 # ---------------------------------------------------------------------------
 # Platform-specific `install-comfyui`
