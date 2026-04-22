@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Getting Started — Apollo Capabilities</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --border: #e2e8f0;
+      --accent: #6366f1;
+      --accent-light: #4f46e5;
+      --text: #0f172a;
+      --muted: #64748b;
+      --code-bg: #f1f5f9;
+      --step-num: #6366f1;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .hero .badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-light);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 999px;
+      padding: 0.25rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h2 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #0f172a 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem 4rem;
+    }
+
+    /* What are capabilities */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card h3 .icon { font-size: 1.2rem; }
+
+    .card p { color: var(--muted); font-size: 0.95rem; }
+
+    .card ul {
+      list-style: none;
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .card ul li {
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding-left: 1.25rem;
+      position: relative;
+    }
+
+    .card ul li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent-light);
+    }
+
+    /* Steps */
+    .steps-heading {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 2.5rem 0 1.25rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: var(--accent-light);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: grid;
+      place-items: center;
+      margin-top: 0.15rem;
+    }
+
+    .step-body { flex: 1; }
+
+    .step-body h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .step-body p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+
+    code {
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+      color: #4f46e5;
+    }
+
+    pre code { color: #4f46e5; }
+
+    .inline-code {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.85em;
+      color: #4f46e5;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">Welcome</div>
+  <h2>Build &amp; run AI-ready capabilities</h2>
+  <p>Apollo capabilities are self-contained, reproducible environments that expose tools, models, and apps with a single command.</p>
+</div>
+
+<main>
+
+  <!-- What are capabilities -->
+  <div class="card">
+    <h3><span class="icon">🧩</span> What is a capability?</h3>
+    <p>A capability is a <strong>Nebi</strong>-managed pixi project that packages everything needed to run an AI tool, model, or application. Each capability declares:</p>
+    <ul>
+      <li>Its <strong>dependencies</strong> — pinned conda/PyPI packages</li>
+      <li>A <strong>launch task</strong> — the single command that starts the app or service</li>
+      <li><strong>Metadata</strong> — name, description, target environments, and how it should run (<span class="inline-code">app</span>, <span class="inline-code">browser</span>, or <span class="inline-code">background</span>)</li>
+    </ul>
+  </div>
+
+  <!-- Apollo Desktop -->
+  <div class="steps-heading">Option 1 — Apollo Desktop App</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Open the Apollo Desktop App</h4>
+      <p>Launch Apollo Desktop on your machine. All available capabilities are listed in the capabilities browser.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Select a capability</h4>
+      <p>Click on any capability card to open its detail view, where you can read its description and requirements.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Click Install</h4>
+      <p>Apollo resolves and installs all dependencies into an isolated environment, then launches the capability automatically — no terminal needed. It opens in the correct context: app window, browser tab, or background service.</p>
+    </div>
+  </div>
+
+  <!-- Nebi CLI -->
+  <div class="steps-heading" style="margin-top: 3rem;">Option 2 — Run locally with Nebi</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Install Nebi</h4>
+      <p>Nebi builds on pixi to add environment versioning, sharing, and team governance. Install pixi first, then install Nebi.</p>
+      <pre><code>curl -fsSL https://pixi.sh/install.sh | sh
+pixi global install nebi</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Import the capability</h4>
+      <p>Pull the capability directly from the OpenTeams registry into a local directory.</p>
+      <pre><code>nebi import quay.io/openteams_capabilities/hello-world:latest -o ./hello-world</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Launch the capability</h4>
+      <p>Navigate into the imported directory and run the launch task with pixi.</p>
+      <pre><code>cd hello-world
+pixi run launch</code></pre>
+    </div>
+  </div>
+
+  <!-- Pixi CLI -->
+  <div class="steps-heading" style="margin-top: 3rem;">Option 3 — Run locally with pixi</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Install pixi</h4>
+      <p>Pixi is the package manager that powers every capability. Install it once on your machine.</p>
+      <pre><code>curl -fsSL https://pixi.sh/install.sh | sh</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Clone the repository</h4>
+      <p>Clone the Apollo capabilities repository to get all capabilities locally.</p>
+      <pre><code>git clone https://github.com/openteams-ai/apollo-capabilities.git
+cd apollo-capabilities</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Navigate to a capability directory</h4>
+      <p>Each capability lives in its own folder inside <span class="inline-code">capabilities/</span>.</p>
+      <pre><code>cd capabilities/hello-world</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Run the launch task</h4>
+      <p>Pixi installs dependencies into an isolated environment on first run, then executes the <span class="inline-code">launch</span> task.</p>
+      <pre><code>pixi run launch</code></pre>
+    </div>
+  </div>
+
+  <!-- Creating new capabilities -->
+  <div class="steps-heading" style="margin-top: 3rem;">Creating a new capability</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Copy an existing capability as a template</h4>
+      <p>The <span class="inline-code">hello-world</span> capability is the simplest starting point. Copy it into a new folder with your capability's name.</p>
+      <pre><code>cp -r capabilities/hello-world capabilities/my-capability</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Update the manifest</h4>
+      <p>Edit <span class="inline-code">pixi.toml</span> to set the name, description, dependencies, and launch task for your new capability.</p>
+      <pre><code># Edit capabilities/my-capability/pixi.toml</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Run it</h4>
+      <p>Pixi installs your dependencies and launches the capability.</p>
+      <pre><code>cd capabilities/my-capability
+pixi run launch</code></pre>
+    </div>
+  </div>
+
+
+</main>
+
+</body>
+</html>
