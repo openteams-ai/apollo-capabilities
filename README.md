@@ -18,6 +18,7 @@ Each capability lives in its own directory and is a standalone pixi project. The
 
 ## Included capabilities
 
+- `getting-started` - a welcome and getting started guide for Apollo capabilities
 - `hello-world` — minimal capability that prints a greeting
 - `jupyterlab` — launches JupyterLab with a base data stack
 - `opencv-webcam` — webcam face detection demo (from Pixi OpenCV example, webcam capture only)
