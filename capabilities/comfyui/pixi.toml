@@ -1,0 +1,118 @@
+[workspace]
+authors = ["dillonroach <dillon.roach@gmail.com>"]
+channels = ["conda-forge"]
+name = "comfyui"
+platforms = ["linux-64", "osx-arm64", "win-64"]
+version = "0.16.4"
+
+[tool.nebi.capability]
+spec-version = "0.1.0"
+
+[tool.nebi.capability.openteams.comfyui]
+name = "ComfyUI"
+description = "Node-based image generation GUI. Installed and launched via comfy-cli, which handles GPU-specific PyTorch wheel selection (NVIDIA CUDA on Linux/Windows, MPS on Apple Silicon)."
+author = { name = "OpenTeams", email = "info@openteams.com" }
+tags = ["comfyui", "image-generation", "diffusion"]
+default-target = "local"
+
+[tool.nebi.capability.openteams.comfyui.targets.local]
+task = "serve"
+environment = "default"
+
+# Base dependencies — python + git (comfy install clones ComfyUI via git),
+# with comfy-cli as the only managed pypi package. Everything else (torch,
+# torchvision, torchaudio, transformers, and the comfy-*/comfyui-* pins
+# from ComfyUI's release requirements.txt) is installed by `comfy install`
+# into the active pixi env at initialize time. Python is capped at <3.13
+# to match the broadest compatibility across cuXXX PyTorch wheels that
+# comfy-cli may select.
+[dependencies]
+python = ">=3.10,<3.13"
+git = "*"
+pip = "*"
+
+[pypi-dependencies]
+comfy-cli = "*"
+
+# ===========================================================================
+# Tasks
+#
+# Two-stage flow:
+#   1. `pixi run initialize` — installs ComfyUI via comfy-cli (which clones
+#      the repo, uv-installs the GPU-specific PyTorch wheel and all
+#      requirements) and then fetches the default z_image_turbo model set.
+#   2. `pixi run serve` — launches ComfyUI via `comfy launch`.
+#
+# `install-comfyui` is overridden per-platform below so that the correct
+# GPU flag is passed to `comfy install` (comfy-cli does NOT auto-detect;
+# it prompts interactively, and --skip-prompt requires an explicit flag).
+# ===========================================================================
+[tasks]
+
+# Fetches the default z_image_turbo model set straight from HuggingFace
+# into ComfyUI/models/<subdir>/. Skips any file that already exists so
+# re-runs are safe and don't re-download multi-GB weights.
+download-models = { cmd = '''python -c "
+import os, urllib.request
+
+DOWNLOADS = [
+    ('https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors',
+     'ComfyUI/models/diffusion_models/z_image_turbo_bf16.safetensors'),
+    ('https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors',
+     'ComfyUI/models/text_encoders/qwen_3_4b.safetensors'),
+    ('https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors',
+     'ComfyUI/models/vae/ae.safetensors'),
+]
+
+def hook(count, block_size, total_size):
+    got = count * block_size
+    if total_size > 0:
+        pct = min(100.0, got * 100 / total_size)
+        print(f'  {pct:5.1f}%  {got/(1024**3):.2f} / {total_size/(1024**3):.2f} GB', end='\r')
+
+for url, dest in DOWNLOADS:
+    if os.path.exists(dest):
+        print(f'{dest} already present, skipping.')
+        continue
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    print(f'Downloading -> {dest}')
+    urllib.request.urlretrieve(url, dest, reporthook=hook)
+    print()
+
+print('All default model downloads complete.')
+" ''', depends-on = ["install-comfyui"] }
+
+# Stage 1 orchestrator — installs ComfyUI and fetches default models in
+# one command.
+initialize = { cmd = "echo 'Initialization complete. Run: pixi run serve'", depends-on = ["install-comfyui", "download-models"] }
+
+# Stage 2 — launches ComfyUI. `--here` ties the launch to the ./ComfyUI/
+# workspace rather than trying to pick up a recent install elsewhere.
+# Extra arguments for main.py (e.g. `-- --listen 0.0.0.0`) can be appended
+# on the pixi command line.
+serve = "comfy tracking disable && comfy --here launch"
+
+# ---------------------------------------------------------------------------
+# Platform-specific `install-comfyui`
+#
+# Shared flags:
+#   --skip-prompt — don't block on interactive prompts
+#   --here        — place the install in this directory (./ComfyUI/)
+#                   rather than the default ~/comfy
+#   --fast-deps   — use uv instead of pip; also drives the GPU-specific
+#                   PyTorch wheel index selection
+#
+# GPU flag is platform-specific:
+#   --nvidia   on linux-64 / win-64 (auto-detects local CUDA version via
+#              nvidia-smi and picks the matching cuXXX wheel index)
+#   --m-series on osx-arm64 (Apple Silicon; uses MPS-capable torch wheels
+#              from the standard PyPI index)
+# ---------------------------------------------------------------------------
+[target.linux-64.tasks]
+install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --fast-deps --nvidia"
+
+[target.win-64.tasks]
+install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --fast-deps --nvidia"
+
+[target.osx-arm64.tasks]
+install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --fast-deps --m-series"
