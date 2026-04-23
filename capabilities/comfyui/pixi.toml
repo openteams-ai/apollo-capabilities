@@ -24,11 +24,9 @@ runs-in = "browser"
 # with comfy-cli as the only managed pypi package. Everything else (torch,
 # torchvision, torchaudio, transformers, and the comfy-*/comfyui-* pins
 # from ComfyUI's release requirements.txt) is installed by `comfy install`
-# into the active pixi env at initialize time. Python is capped at <3.13
-# to match the broadest compatibility across cuXXX PyTorch wheels that
-# comfy-cli may select.
+# into the active pixi env at initialize time.
 [dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<3.14"
 git = "*"
 pip = "*"
 
