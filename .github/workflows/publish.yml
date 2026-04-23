@@ -78,7 +78,7 @@ jobs:
 
             cd "$env_dir"
             nebi push "${env_name}:${version}"
-            nebi publish "${env_name}" --registry quay --repo "${env_name}"
+            nebi publish "${env_name}" --import --registry quay --repo "${env_name}"
 
             cd "$GITHUB_WORKSPACE"
           done
