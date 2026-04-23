@@ -14,7 +14,7 @@ jobs:
 
       - name: Download nebi
         env:
-          NEBI_VERSION: "0.10.2"
+          NEBI_VERSION: "0.10.4"
         run: |
           curl -sL "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/nebi_${NEBI_VERSION}_linux_x86_64.tar.gz" \
             | tar xz -C /usr/local/bin nebi
@@ -109,7 +109,7 @@ jobs:
 
       - name: Download nebi
         env:
-          NEBI_VERSION: "0.10.2"
+          NEBI_VERSION: "0.10.4"
         run: |
           curl -sL "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/nebi_${NEBI_VERSION}_linux_x86_64.tar.gz" \
             | tar xz -C /usr/local/bin nebi
