@@ -22,6 +22,7 @@ Each capability lives in its own directory and is a standalone pixi project. The
 - `jupyterlab` — launches JupyterLab with a base data stack
 - `opencv-webcam` — webcam face detection demo (from Pixi OpenCV example, webcam capture only)
 - `llamacpp` -  Runs a local llama.cpp server that automatically downloads model GGUFs from HuggingFace.
+- `comfyui` - Runs a local ComfyUI server with base models.
 
 ## Usage
 
