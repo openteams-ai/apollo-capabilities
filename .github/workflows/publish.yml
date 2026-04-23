@@ -77,7 +77,7 @@ jobs:
               || echo "  -> Warning: could not set write access for ${{ secrets.QUAY_USERNAME }}"
 
             cd "$env_dir"
-            # nebi push "${env_name}:${version}"
+            nebi push "${env_name}:${version}"
             nebi publish --local --registry quay --repo "${env_name}"
 
             cd "$GITHUB_WORKSPACE"
