@@ -1,6 +1,6 @@
 """
 Minimal HTTP server for the getting-started capability.
-Serves index.html on a fixed port and prints the URL for Apollo to pick up.
+Serves index.html on a fixed port and prints the URL for Collab to pick up.
 """
 
 import http.server

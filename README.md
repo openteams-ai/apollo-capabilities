@@ -1,4 +1,4 @@
-# Apollo Capabilities
+# Collab Capabilities
 
 A collection of reusable [Nebi](https://nebi.nebari.dev) capabilities — self-contained `pixi.toml` files that define a launch task and dependencies for common workflows.
 
@@ -18,11 +18,11 @@ Each capability lives in its own directory and is a standalone pixi project. The
 
 ## Included capabilities
 
-- `getting-started` - a welcome and getting started guide for Apollo capabilities
-- `hello-world` — minimal capability that prints a greeting
+- `getting-started` - a welcome and getting started guide for Collab capabilities
 - `jupyterlab` — launches JupyterLab with a base data stack
 - `opencv-webcam` — webcam face detection demo (from Pixi OpenCV example, webcam capture only)
 - `llamacpp` -  Runs a local llama.cpp server that automatically downloads model GGUFs from HuggingFace.
+- `comfyui` - Runs a local ComfyUI server with base models.
 
 ## Usage
 
@@ -31,7 +31,7 @@ Each capability lives in its own directory and is a standalone pixi project. The
 Capabilities are published to `quay.io/openteams_capabilities`. Import one directly with [Nebi](https://nebi.nebari.dev):
 
 ```sh
-nebi import quay.io/openteams_capabilities/hello-world:latest
+nebi import quay.io/openteams_capabilities/getting-started:latest
 ```
 
 Then run it:
