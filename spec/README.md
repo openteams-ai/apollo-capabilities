@@ -1,6 +1,6 @@
 # Capability Specification
 
-This directory contains the Apollo capability standard.
+This directory contains the Collab capability standard.
 
 ## Files
 

@@ -1,8 +1,8 @@
 # Capability Schema (spec-version = "0.1.0")
 
-This document is the human-readable specification for Apollo capability metadata. A machine-readable companion schema lives at [`capability.schema.json`](capability.schema.json).
+This document is the human-readable specification for Collab capability metadata. A machine-readable companion schema lives at [`capability.schema.json`](capability.schema.json).
 
-Apollo capabilities are Pixi manifests (`pixi.toml`) with capability metadata under:
+Collab capabilities are Pixi manifests (`pixi.toml`) with capability metadata under:
 
 - `[tool.nebi.capability]`
 - `[tool.nebi.capability.<org-name>.<capability-key>]`

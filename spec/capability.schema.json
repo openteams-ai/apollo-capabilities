@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/main/spec/capability.schema.json",
-  "title": "Apollo Capability Manifest",
-  "description": "JSON Schema for Apollo capability metadata embedded in a Pixi manifest. This schema applies after the TOML manifest has been parsed into a generic object representation.",
+  "title": "Collab Capability Manifest",
+  "description": "JSON Schema for Collab capability metadata embedded in a Pixi manifest. This schema applies after the TOML manifest has been parsed into a generic object representation.",
   "type": "object",
   "required": ["workspace", "tool", "tasks"],
   "properties": {
