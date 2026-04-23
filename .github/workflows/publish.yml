@@ -78,6 +78,7 @@ jobs:
 
             cd "$env_dir"
             nebi init
+            nebi registry add --local --name quay --url quay.io --namespace openteams_capabilities
             nebi publish --local --registry quay --repo "${env_name}"
 
             cd "$GITHUB_WORKSPACE"
