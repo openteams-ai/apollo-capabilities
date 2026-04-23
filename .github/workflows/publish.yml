@@ -78,6 +78,7 @@ jobs:
 
             cd "$env_dir"
             nebi init
+            nebi registry remove --local --name quay 2>/dev/null || true
             echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --local --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default
             nebi publish --local --registry quay --repo "${env_name}"
 
