@@ -78,7 +78,7 @@ jobs:
 
             cd "$env_dir"
             nebi init
-            nebi registry add --local --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password "${{ secrets.QUAY_PASSWORD }}" --default
+            echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --local --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default
             nebi publish --local --registry quay --repo "${env_name}"
 
             cd "$GITHUB_WORKSPACE"
