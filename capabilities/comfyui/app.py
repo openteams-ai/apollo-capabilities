@@ -21,7 +21,7 @@ def hook(count, block_size, total_size):
     got = count * block_size
     if total_size > 0:
         pct = min(100.0, got * 100 / total_size)
-        print(f"  {pct:5.1f}%  {got/(1024**3):.2f} / {total_size/(1024**3):.2f} GB", end="\r")
+        print(f"  {pct:5.1f}%  {got/(1024**3):.2f} / {total_size/(1024**3):.2f} GB", flush=True)
 
 
 for url, dest in DOWNLOADS:
