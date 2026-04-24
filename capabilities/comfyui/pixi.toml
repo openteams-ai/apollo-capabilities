@@ -93,10 +93,10 @@ serve = { cmd = "comfy tracking disable && comfy --here launch", depends-on = ["
 #              from the nightly PyPI index)
 # ---------------------------------------------------------------------------
 [target.linux-64.tasks]
-install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --nvidia"
+install-comfyui = "comfy tracking disable && (test -d ComfyUI || comfy --skip-prompt --here install --nvidia)"
 
 [target.win-64.tasks]
-install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --nvidia"
+install-comfyui = "comfy tracking disable && (if not exist ComfyUI\\ (comfy --skip-prompt --here install --nvidia))"
 
 [target.osx-arm64.tasks]
-install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --m-series"
+install-comfyui = "comfy tracking disable && (test -d ComfyUI || comfy --skip-prompt --here install --m-series)"
