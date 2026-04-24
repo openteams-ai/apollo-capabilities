@@ -78,20 +78,25 @@ serve = { cmd = "comfy tracking disable && comfy --here launch", depends-on = ["
 #   --skip-prompt — don't block on interactive prompts
 #   --here        — place the install in this directory (./ComfyUI/)
 #                   rather than the default ~/comfy
-#   --fast-deps   — use uv instead of pip; also drives the GPU-specific
-#                   PyTorch wheel index selection
+#
+# NOTE: --fast-deps (uv-based install) is intentionally omitted. When the
+# workspace path contains spaces (e.g. macOS ~/Library/Application Support/…),
+# comfy-cli's uv invocation fails because uv truncates the path at the first
+# space when reading UV_INTERNAL__PARENT_INTERPRETER. The pip-based install
+# path avoids this: it uses a relative requirements.txt path and the platform
+# GPU selection still works correctly via --nvidia / --m-series.
 #
 # GPU flag is platform-specific:
 #   --nvidia   on linux-64 / win-64 (auto-detects local CUDA version via
 #              nvidia-smi and picks the matching cuXXX wheel index)
 #   --m-series on osx-arm64 (Apple Silicon; uses MPS-capable torch wheels
-#              from the standard PyPI index)
+#              from the nightly PyPI index)
 # ---------------------------------------------------------------------------
 [target.linux-64.tasks]
-install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --fast-deps --nvidia"
+install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --nvidia"
 
 [target.win-64.tasks]
-install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --fast-deps --nvidia"
+install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --nvidia"
 
 [target.osx-arm64.tasks]
-install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --fast-deps --m-series"
+install-comfyui = "comfy tracking disable && comfy --skip-prompt --here install --m-series"
