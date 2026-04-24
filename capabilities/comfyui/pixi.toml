@@ -21,7 +21,7 @@ default-target = "local"
 [tool.nebi.capability.openteams.comfyui.targets.local]
 task = "serve"
 environment = "default"
-runs-in = "browser"
+runs-in = "background"
 
 # Base dependencies — python + git (comfy install clones ComfyUI via git),
 # with comfy-cli as the only managed pypi package. Everything else (torch,
