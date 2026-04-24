@@ -229,7 +229,7 @@ HTML = """<!doctype html>
 <main>
 
   <div class="card">
-    <h3><span class="icon">\U0001f9e9</span> What is a capability?</h3>
+    <h3>What is a capability?</h3>
     <p>A capability is a <strong>Nebi</strong>-managed pixi project that packages everything needed to run an AI tool, model, or application. Each capability declares:</p>
     <ul>
       <li>Its <strong>dependencies</strong> — pinned conda/PyPI packages</li>
