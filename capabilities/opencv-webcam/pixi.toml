@@ -26,4 +26,4 @@ environment = "default"
 runs-in = "background"
 
 [tasks]
-launch = "python webcam_capture.py"
+launch = {cmd = "python -u webcam_capture.py" }
