@@ -22,6 +22,7 @@ Each capability lives in its own directory and is a standalone pixi project. The
 - `jupyterlab` — launches JupyterLab with a base data stack
 - `llamacpp` -  Runs a local llama.cpp server that automatically downloads model GGUFs from HuggingFace.
 - `comfyui` - Runs a local ComfyUI server with base models.
+- `data-explorer` — upload a CSV, browse it as a table, and chat with the data using a local LLM (llama.cpp, Ollama, or Docker Model Runner).
 
 ## Usage
 
