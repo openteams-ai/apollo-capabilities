@@ -1,0 +1,121 @@
+order_id,order_date,region,customer_name,product_category,product,quantity,unit_price,discount,total_price
+ORD-1054,2025-01-01,Central,Taylor Anderson,Apparel,T-Shirt,3,24.00,0.10,64.80
+ORD-1058,2025-01-01,East,Taylor Martinez,Apparel,Jacket,2,149.00,0.00,298.00
+ORD-1023,2025-01-04,North,Jamie Nguyen,Outdoors,Backpack,2,79.00,0.00,158.00
+ORD-1096,2025-01-07,East,Emerson Clark,Home,Blender,1,59.00,0.10,53.10
+ORD-1029,2025-01-08,South,Morgan Martinez,Outdoors,Tent,1,199.00,0.00,199.00
+ORD-1018,2025-01-10,East,Quinn Brown,Electronics,Smart Watch,1,329.00,0.00,329.00
+ORD-1108,2025-01-11,East,Parker Patel,Electronics,Laptop,1,1199.00,0.15,1019.15
+ORD-1001,2025-01-16,South,Jamie Lewis,Electronics,Smart Watch,2,329.00,0.00,658.00
+ORD-1035,2025-01-21,North,Sage Walker,Outdoors,Backpack,2,79.00,0.10,142.20
+ORD-1046,2025-01-21,South,Jamie Garcia,Home,Coffee Maker,1,79.00,0.00,79.00
+ORD-1077,2025-01-21,South,Taylor Kim,Home,Coffee Maker,4,79.00,0.00,316.00
+ORD-1107,2025-01-21,East,Blake Davis,Outdoors,Sleeping Bag,2,89.00,0.05,169.10
+ORD-1013,2025-01-25,South,Morgan Martinez,Home,Air Fryer,2,119.00,0.00,238.00
+ORD-1097,2025-01-27,West,Riley Nguyen,Books,Biography,1,22.00,0.00,22.00
+ORD-1098,2025-01-28,South,Parker Miller,Books,Textbook,1,89.00,0.00,89.00
+ORD-1032,2025-01-30,Central,Jordan Wilson,Home,Vacuum,1,219.00,0.10,197.10
+ORD-1010,2025-02-03,Central,Drew Johnson,Electronics,Smartphone,2,899.00,0.00,1798.00
+ORD-1034,2025-02-04,South,Rowan Garcia,Electronics,Headphones,1,149.00,0.15,126.65
+ORD-1006,2025-02-05,South,Quinn Nguyen,Apparel,Hat,1,19.00,0.00,19.00
+ORD-1008,2025-02-06,South,Logan Brown,Apparel,Jeans,3,59.00,0.10,159.30
+ORD-1105,2025-02-06,South,Quinn Hall,Home,Lamp,4,39.00,0.00,156.00
+ORD-1102,2025-02-08,North,Sage Robinson,Home,Vacuum,1,219.00,0.00,219.00
+ORD-1019,2025-02-10,West,Sam Young,Electronics,Headphones,5,149.00,0.00,745.00
+ORD-1068,2025-02-11,South,Jamie Thomas,Apparel,Sneakers,1,99.00,0.00,99.00
+ORD-1101,2025-02-20,South,Reese Nguyen,Outdoors,Tent,2,199.00,0.00,398.00
+ORD-1027,2025-02-25,South,Taylor Young,Electronics,Tablet,3,499.00,0.00,1497.00
+ORD-1064,2025-03-04,South,Hayden Lewis,Outdoors,Backpack,5,79.00,0.05,375.25
+ORD-1114,2025-03-09,West,Emerson Garcia,Books,Novel,1,14.00,0.00,14.00
+ORD-1017,2025-03-20,South,Logan Lewis,Apparel,Hat,2,19.00,0.00,38.00
+ORD-1041,2025-03-21,East,Blake Johnson,Electronics,Laptop,3,1199.00,0.00,3597.00
+ORD-1039,2025-03-22,Central,Quinn Hall,Electronics,Headphones,1,149.00,0.05,141.55
+ORD-1020,2025-03-26,Central,Blake Martinez,Home,Vacuum,3,219.00,0.00,657.00
+ORD-1079,2025-03-27,Central,Riley Smith,Books,Biography,4,22.00,0.10,79.20
+ORD-1113,2025-04-07,East,Blake Clark,Outdoors,Sleeping Bag,2,89.00,0.10,160.20
+ORD-1088,2025-04-08,South,Sage Clark,Outdoors,Tent,2,199.00,0.00,398.00
+ORD-1050,2025-04-09,East,Reese Nguyen,Apparel,Jeans,1,59.00,0.05,56.05
+ORD-1092,2025-04-09,North,Logan Smith,Apparel,Jeans,1,59.00,0.00,59.00
+ORD-1104,2025-04-12,North,Logan Brown,Home,Lamp,4,39.00,0.05,148.20
+ORD-1021,2025-04-13,East,Rowan Anderson,Home,Air Fryer,4,119.00,0.15,404.60
+ORD-1036,2025-04-15,East,Jamie Davis,Outdoors,Camp Stove,5,49.00,0.15,208.25
+ORD-1038,2025-04-20,East,Casey Anderson,Books,Novel,1,14.00,0.10,12.60
+ORD-1009,2025-04-23,East,Jordan Brown,Home,Blender,2,59.00,0.15,100.30
+ORD-1063,2025-04-23,Central,Hayden Patel,Electronics,Laptop,4,1199.00,0.00,4796.00
+ORD-1022,2025-04-26,East,Avery Walker,Books,Textbook,1,89.00,0.00,89.00
+ORD-1116,2025-04-26,West,Riley Lopez,Electronics,Smart Watch,2,329.00,0.00,658.00
+ORD-1103,2025-04-29,East,Hayden Nguyen,Outdoors,Sleeping Bag,1,89.00,0.00,89.00
+ORD-1024,2025-05-02,West,Taylor Young,Electronics,Smartphone,1,899.00,0.00,899.00
+ORD-1115,2025-05-03,South,Quinn Young,Electronics,Keyboard,2,89.00,0.15,151.30
+ORD-1025,2025-05-05,West,Taylor Garcia,Home,Air Fryer,2,119.00,0.05,226.10
+ORD-1081,2025-05-05,East,Blake Garcia,Electronics,Smart Watch,3,329.00,0.00,987.00
+ORD-1000,2025-05-06,South,Riley Young,Electronics,Laptop,3,1199.00,0.00,3597.00
+ORD-1061,2025-05-06,Central,Sam Robinson,Home,Vacuum,1,219.00,0.05,208.05
+ORD-1087,2025-05-13,East,Blake Davis,Home,Blender,1,59.00,0.00,59.00
+ORD-1016,2025-05-15,South,Kendall Garcia,Books,Cookbook,2,28.00,0.10,50.40
+ORD-1042,2025-05-16,West,Reese Patel,Apparel,Jeans,3,59.00,0.10,159.30
+ORD-1052,2025-05-16,North,Blake Martinez,Electronics,Smartphone,1,899.00,0.00,899.00
+ORD-1015,2025-05-17,East,Riley Miller,Electronics,Keyboard,5,89.00,0.15,378.25
+ORD-1085,2025-05-18,South,Sam Davis,Books,Textbook,2,89.00,0.00,178.00
+ORD-1072,2025-05-20,West,Avery Thomas,Outdoors,Backpack,2,79.00,0.05,150.10
+ORD-1117,2025-05-20,West,Emerson Brown,Books,Biography,2,22.00,0.05,41.80
+ORD-1067,2025-05-21,North,Quinn Brown,Outdoors,Sleeping Bag,3,89.00,0.05,253.65
+ORD-1095,2025-05-21,North,Logan Miller,Electronics,Keyboard,2,89.00,0.00,178.00
+ORD-1043,2025-05-22,North,Drew Lopez,Electronics,Keyboard,2,89.00,0.00,178.00
+ORD-1093,2025-05-22,Central,Kendall Hall,Home,Vacuum,3,219.00,0.15,558.45
+ORD-1028,2025-05-23,South,Sam Robinson,Books,Cookbook,2,28.00,0.05,53.20
+ORD-1111,2025-05-28,West,Logan Patel,Apparel,Jacket,3,149.00,0.15,379.95
+ORD-1094,2025-06-01,East,Morgan Miller,Apparel,T-Shirt,4,24.00,0.00,96.00
+ORD-1071,2025-06-02,West,Logan Young,Books,Novel,5,14.00,0.05,66.50
+ORD-1037,2025-06-03,East,Sam Kim,Books,Cookbook,3,28.00,0.05,79.80
+ORD-1040,2025-06-03,North,Casey Davis,Outdoors,Tent,3,199.00,0.15,507.45
+ORD-1090,2025-06-06,Central,Skyler Clark,Home,Blender,3,59.00,0.15,150.45
+ORD-1080,2025-06-09,West,Rowan Johnson,Apparel,T-Shirt,2,24.00,0.10,43.20
+ORD-1112,2025-06-15,West,Kendall Kim,Books,Novel,1,14.00,0.00,14.00
+ORD-1056,2025-06-17,East,Logan Lopez,Outdoors,Camp Stove,3,49.00,0.05,139.65
+ORD-1055,2025-06-19,East,Riley Miller,Books,Novel,5,14.00,0.10,63.00
+ORD-1091,2025-06-19,West,Reese Miller,Outdoors,Camp Stove,2,49.00,0.00,98.00
+ORD-1048,2025-06-20,South,Reese Smith,Home,Blender,1,59.00,0.05,56.05
+ORD-1060,2025-06-21,South,Quinn Brown,Home,Coffee Maker,1,79.00,0.00,79.00
+ORD-1003,2025-06-24,South,Taylor Wilson,Electronics,Headphones,3,149.00,0.00,447.00
+ORD-1004,2025-07-03,Central,Reese Patel,Electronics,Laptop,2,1199.00,0.00,2398.00
+ORD-1045,2025-07-09,Central,Casey Martinez,Home,Air Fryer,1,119.00,0.10,107.10
+ORD-1005,2025-07-13,Central,Quinn Hall,Books,Novel,5,14.00,0.00,70.00
+ORD-1057,2025-07-14,South,Blake Walker,Home,Blender,3,59.00,0.15,150.45
+ORD-1086,2025-07-14,North,Emerson Wilson,Books,Cookbook,4,28.00,0.00,112.00
+ORD-1062,2025-07-16,West,Jamie Lopez,Books,Cookbook,3,28.00,0.05,79.80
+ORD-1070,2025-07-19,North,Parker Thomas,Electronics,Headphones,4,149.00,0.10,536.40
+ORD-1051,2025-07-24,Central,Drew Kim,Apparel,Sneakers,3,99.00,0.15,252.45
+ORD-1030,2025-07-25,South,Rowan Kim,Books,Textbook,1,89.00,0.00,89.00
+ORD-1047,2025-07-28,South,Jamie Smith,Apparel,Hat,5,19.00,0.10,85.50
+ORD-1069,2025-07-28,Central,Hayden Martinez,Home,Vacuum,1,219.00,0.00,219.00
+ORD-1110,2025-07-29,East,Riley Smith,Books,Novel,2,14.00,0.00,28.00
+ORD-1099,2025-08-02,Central,Blake Brown,Electronics,Headphones,1,149.00,0.10,134.10
+ORD-1002,2025-08-03,West,Parker Davis,Outdoors,Tent,2,199.00,0.00,398.00
+ORD-1026,2025-08-05,West,Jordan Garcia,Electronics,Keyboard,2,89.00,0.05,169.10
+ORD-1044,2025-08-07,North,Riley Nguyen,Apparel,Jeans,3,59.00,0.10,159.30
+ORD-1012,2025-08-08,West,Skyler Brown,Outdoors,Camp Stove,3,49.00,0.10,132.30
+ORD-1074,2025-08-08,West,Morgan Patel,Books,Novel,1,14.00,0.00,14.00
+ORD-1082,2025-08-08,East,Sam Lewis,Outdoors,Tent,1,199.00,0.15,169.15
+ORD-1059,2025-08-15,South,Kendall Clark,Outdoors,Camp Stove,2,49.00,0.15,83.30
+ORD-1065,2025-08-15,Central,Sage Young,Outdoors,Camp Stove,5,49.00,0.10,220.50
+ORD-1100,2025-08-15,Central,Sage Miller,Outdoors,Sleeping Bag,2,89.00,0.00,178.00
+ORD-1109,2025-08-15,South,Parker Martinez,Home,Blender,2,59.00,0.00,118.00
+ORD-1007,2025-08-21,East,Morgan Anderson,Home,Coffee Maker,2,79.00,0.15,134.30
+ORD-1031,2025-08-21,West,Logan Clark,Books,Biography,5,22.00,0.00,110.00
+ORD-1075,2025-08-21,East,Rowan Davis,Apparel,Jacket,1,149.00,0.00,149.00
+ORD-1011,2025-08-23,East,Casey Brown,Books,Textbook,5,89.00,0.00,445.00
+ORD-1014,2025-08-28,East,Logan Kim,Outdoors,Tent,2,199.00,0.10,358.20
+ORD-1073,2025-08-28,Central,Logan Kim,Apparel,Jacket,3,149.00,0.00,447.00
+ORD-1106,2025-08-28,East,Rowan Davis,Outdoors,Camp Stove,2,49.00,0.15,83.30
+ORD-1049,2025-08-29,South,Hayden Anderson,Electronics,Tablet,4,499.00,0.00,1996.00
+ORD-1076,2025-08-29,Central,Jordan Anderson,Books,Biography,4,22.00,0.00,88.00
+ORD-1078,2025-08-31,North,Parker Johnson,Outdoors,Backpack,1,79.00,0.15,67.15
+ORD-1066,2025-09-01,East,Jamie Davis,Books,Cookbook,3,28.00,0.05,79.80
+ORD-1083,2025-09-08,West,Skyler Robinson,Apparel,T-Shirt,4,24.00,0.00,96.00
+ORD-1089,2025-09-09,North,Sam Miller,Outdoors,Backpack,3,79.00,0.05,225.15
+ORD-1033,2025-09-15,South,Jordan Lewis,Electronics,Laptop,2,1199.00,0.10,2158.20
+ORD-1119,2025-09-17,North,Quinn Miller,Books,Biography,5,22.00,0.00,110.00
+ORD-1118,2025-09-18,South,Sam Davis,Books,Cookbook,2,28.00,0.15,47.60
+ORD-1053,2025-09-19,West,Parker Johnson,Apparel,Sneakers,2,99.00,0.00,198.00
+ORD-1084,2025-09-25,East,Blake Young,Home,Blender,1,59.00,0.15,50.15
