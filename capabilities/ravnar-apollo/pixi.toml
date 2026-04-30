@@ -1,0 +1,31 @@
+[workspace]
+name = "ravnar-apollo"
+version = "0.1.0"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[dependencies]
+python = ">=3.14,<3.15"
+
+[pypi-dependencies]
+ravnar = { version = "==0.0.5", extras = ["pydantic-ai"] }
+uvicorn = "*"
+openai = ">=2, <3"
+
+[tool.nebi.bundle]
+include = ["ravnar_apollo/**"]
+
+[tool.nebi.capability]
+spec-version = "0.1.0"
+
+[tool.nebi.capability.openteams.ravnar-apollo]
+name = "ravnar-apollo"
+description = "Fully-fledged, pluggable AG-UI server"
+author = { name = "OpenTeams" , email = "info@openteams.com"}
+default-target = "local"
+
+[tool.nebi.capability.openteams.ravnar-apollo.targets.local]
+task = "launch"
+
+[tasks]
+launch = "python -m ravnar_apollo"
