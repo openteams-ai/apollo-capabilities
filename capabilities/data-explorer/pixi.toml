@@ -22,7 +22,7 @@ spec-version = "0.1.0"
 [tool.nebi.capability.openteams.data-explorer]
 name = "Data Explorer"
 description = "Upload a CSV, browse it as a table, and chat with the data using a local LLM"
-icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/llamacpp/icon.jpeg"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/data-explorer/icon.png"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["data", "csv", "pandas", "llm", "chat", "local"]
 default-target = "local"
