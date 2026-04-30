@@ -13,7 +13,7 @@ uvicorn = "*"
 openai = ">=2, <3"
 
 [tool.nebi.bundle]
-include = ["ravnar_apollo"]
+include = ["ravnar_apollo/**"]
 
 [tool.nebi.capability]
 spec-version = "0.1.0"
