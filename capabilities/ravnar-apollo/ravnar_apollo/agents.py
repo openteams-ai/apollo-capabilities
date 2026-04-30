@@ -1,3 +1,5 @@
+__all__ = ["local_chat_agent"]
+
 from typing import Literal
 
 import ag_ui.core
@@ -9,7 +11,7 @@ import pydantic_ai.providers.openai
 import ravnar.agents
 
 
-class RavnarApolloMetadata(pydantic.BaseModel):
+class AgentMetadata(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(alias_generator=pydantic.alias_generators.to_camel, populate_by_name=True)
 
     location: Literal["local", "hub"]
@@ -30,7 +32,7 @@ def local_chat_agent(
                 provider=model_provider,
                 description=f"A local instance of the {model_name} model provided by {model_provider}",
                 metadata={
-                    "apollo": RavnarApolloMetadata(
+                    "apollo": AgentMetadata(
                         location="local",
                     )
                 },
