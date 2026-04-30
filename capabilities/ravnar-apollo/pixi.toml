@@ -24,7 +24,7 @@ description = "Fully-fledged, pluggable AG-UI server"
 author = { name = "OpenTeams" , email = "info@openteams.com"}
 default-target = "local"
 
-[tool.nebi.capability.openteams.ravnar.targets.local]
+[tool.nebi.capability.openteams.ravnar-apollo.targets.local]
 task = "launch"
 
 [tasks]
