@@ -15,7 +15,7 @@ import ravnar.agents
 class AgentMetadata(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(alias_generator=pydantic.alias_generators.to_camel, populate_by_name=True)
 
-    location: Literal["local", "hub"]
+    apollo_location: Literal["local", "hub"]
 
 
 class LocalChatAgent(ravnar.agents.Agent):
@@ -31,11 +31,7 @@ class LocalChatAgent(ravnar.agents.Agent):
                 name=model_name,
                 provider=model_provider,
                 description=f"A local instance of the {model_name} model provided by {model_provider}",
-                metadata={
-                    "apollo": AgentMetadata(
-                        location="local",
-                    )
-                },
+                metadata=AgentMetadata(apollo_location="local").model_dump(mode="json"),
             )
         ),
     )
