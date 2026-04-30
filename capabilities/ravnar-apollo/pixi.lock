@@ -87,9 +87,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/00/4b/ccc026168948fec4f7555b9164c724cf4125eac006e176541483d2c959be/pydantic_settings-2.13.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0b/d7/1959b9648791274998a9c3526f6d0ec8fd2233e4d4acce81bbae76b44b2a/python_dotenv-1.2.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/9a/22/f1925cdda983ab66fc8ec6ec8014b959262747e58bdca26a4e3d1da29d56/python_multipart-0.0.26-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/88/f9/16491d7ed2a919954993e48aa941b200f38040928474c9e85ea9e64222c3/pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/0f/23/566463856cad6067878b20dcc0aedb825cff93430fc3f297f8b96c386a15/ravnar-0.0.4-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/b5/0d5f9f8ec699cd584f279b4ba07c19e240d609de9b82aefe4569178c5b47/ravnar-0.0.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/8e/7540e8a2036f79a125c1d2ebadf69ed7901608859186c856fa0388ef4197/requests-2.33.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
@@ -180,9 +179,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/01/dd/bebff3040138f00ae8a102d426b27349b9a49acc310fcae7f92112d867e3/pydantic_settings-2.14.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0b/d7/1959b9648791274998a9c3526f6d0ec8fd2233e4d4acce81bbae76b44b2a/python_dotenv-1.2.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/9a/22/f1925cdda983ab66fc8ec6ec8014b959262747e58bdca26a4e3d1da29d56/python_multipart-0.0.26-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9d/8c/f4bd7f6465179953d3ac9bc44ac1a8a3e6122cf8ada906b4f96c60172d43/pyyaml-6.0.3-cp314-cp314-macosx_10_13_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/0f/23/566463856cad6067878b20dcc0aedb825cff93430fc3f297f8b96c386a15/ravnar-0.0.4-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/b5/0d5f9f8ec699cd584f279b4ba07c19e240d609de9b82aefe4569178c5b47/ravnar-0.0.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/8e/7540e8a2036f79a125c1d2ebadf69ed7901608859186c856fa0388ef4197/requests-2.33.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
@@ -272,9 +270,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/01/dd/bebff3040138f00ae8a102d426b27349b9a49acc310fcae7f92112d867e3/pydantic_settings-2.14.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0b/d7/1959b9648791274998a9c3526f6d0ec8fd2233e4d4acce81bbae76b44b2a/python_dotenv-1.2.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/9a/22/f1925cdda983ab66fc8ec6ec8014b959262747e58bdca26a4e3d1da29d56/python_multipart-0.0.26-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/bd/9c/4d95bb87eb2063d20db7b60faa3840c1b18025517ae857371c4dd55a6b3a/pyyaml-6.0.3-cp314-cp314-macosx_11_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/0f/23/566463856cad6067878b20dcc0aedb825cff93430fc3f297f8b96c386a15/ravnar-0.0.4-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/b5/0d5f9f8ec699cd584f279b4ba07c19e240d609de9b82aefe4569178c5b47/ravnar-0.0.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/8e/7540e8a2036f79a125c1d2ebadf69ed7901608859186c856fa0388ef4197/requests-2.33.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
@@ -367,9 +364,8 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/01/dd/bebff3040138f00ae8a102d426b27349b9a49acc310fcae7f92112d867e3/pydantic_settings-2.14.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/0b/d7/1959b9648791274998a9c3526f6d0ec8fd2233e4d4acce81bbae76b44b2a/python_dotenv-1.2.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/9a/22/f1925cdda983ab66fc8ec6ec8014b959262747e58bdca26a4e3d1da29d56/python_multipart-0.0.26-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/23/20/bb6982b26a40bb43951265ba29d4c246ef0ff59c9fdcdf0ed04e0687de4d/pyyaml-6.0.3-cp314-cp314-win_amd64.whl
-      - pypi: https://files.pythonhosted.org/packages/0f/23/566463856cad6067878b20dcc0aedb825cff93430fc3f297f8b96c386a15/ravnar-0.0.4-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/9c/b5/0d5f9f8ec699cd584f279b4ba07c19e240d609de9b82aefe4569178c5b47/ravnar-0.0.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/8e/7540e8a2036f79a125c1d2ebadf69ed7901608859186c856fa0388ef4197/requests-2.33.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl
@@ -1862,11 +1858,6 @@ packages:
   requires_dist:
   - click>=5.0 ; extra == 'cli'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/9a/22/f1925cdda983ab66fc8ec6ec8014b959262747e58bdca26a4e3d1da29d56/python_multipart-0.0.26-py3-none-any.whl
-  name: python-multipart
-  version: 0.0.26
-  sha256: c0b169f8c4484c13b0dcf2ef0ec3a4adb255c4b7d18d8e420477d2b1dd03f185
-  requires_python: '>=3.10'
 - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-8_cp314.conda
   build_number: 8
   sha256: ad6d2e9ac39751cc0529dd1566a26751a0bf2542adb0c232533d32e176e21db5
@@ -1898,14 +1889,15 @@ packages:
   version: 6.0.3
   sha256: 34d5fcd24b8445fadc33f9cf348c1047101756fd760b4dacb5c3e99755703310
   requires_python: '>=3.8'
-- pypi: https://files.pythonhosted.org/packages/0f/23/566463856cad6067878b20dcc0aedb825cff93430fc3f297f8b96c386a15/ravnar-0.0.4-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/9c/b5/0d5f9f8ec699cd584f279b4ba07c19e240d609de9b82aefe4569178c5b47/ravnar-0.0.5-py3-none-any.whl
   name: ravnar
-  version: 0.0.4
-  sha256: a1e7befc6fc3a12f80d2a9102ebe343123405b5af1db1268e05d43e4cc619057
+  version: 0.0.5
+  sha256: 98b6fea698e16a48321ce88f79839d702fec3fd5ff6291f3ad5b8b0ac169bddf
   requires_dist:
   - ag-ui-protocol==0.1.18
   - fastapi
   - fastsse==0.0.2
+  - httpx>=0.28
   - jinja2
   - jsonpatch>=1.33,<2
   - l2sl>=0.4,<0.5
@@ -1917,7 +1909,6 @@ packages:
   - pydantic-core
   - pydantic-settings[yaml]>=2.13
   - pydantic>=2.13
-  - python-multipart
   - sqlalchemy[asyncio]>=2
   - starlette
   - structlog>=25.4.0
@@ -1926,15 +1917,13 @@ packages:
   - agno>=2.5.2,<3 ; extra == 'agno'
   - agno>=2.5.2,<3 ; extra == 'all'
   - httpx-sse>=0.4.0,<0.5 ; extra == 'all'
-  - httpx>=0.28 ; extra == 'all'
   - psycopg[binary,pool]>=3.2.9,<4 ; extra == 'all'
-  - pydantic-ai-slim[ag-ui]>=1.60,<2 ; extra == 'all'
+  - pydantic-ai-slim[ag-ui]>=1.79,<2 ; extra == 'all'
   - pyjwt>=2,<3 ; extra == 'all'
   - uvicorn ; extra == 'all'
   - uvloop ; sys_platform != 'win32' and extra == 'all'
-  - httpx>=0.28 ; extra == 'oidc'
   - pyjwt>=2,<3 ; extra == 'oidc'
-  - pydantic-ai-slim[ag-ui]>=1.60,<2 ; extra == 'pydantic-ai'
+  - pydantic-ai-slim[ag-ui]>=1.79,<2 ; extra == 'pydantic-ai'
   - psycopg[binary,pool]>=3.2.9,<4 ; extra == 'serve'
   - uvicorn ; extra == 'serve'
   - uvloop ; sys_platform != 'win32' and extra == 'serve'
