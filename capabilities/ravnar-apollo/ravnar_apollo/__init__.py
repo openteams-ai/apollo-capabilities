@@ -1,3 +1,3 @@
-__all__ = ["local_chat_agent"]
+__all__ = ["LocalChatAgent"]
 
-from .agents import local_chat_agent
+from .agents import LocalChatAgent
