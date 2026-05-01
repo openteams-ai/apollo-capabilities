@@ -1,8 +1,8 @@
-"""Data Explorer — upload a CSV, view it as a table, chat with it via a local LLM.
+"""Data Explorer — upload a CSV, view it as a table, chat with it via an LLM.
 
-Providers are local OpenAI-compatible servers. Each one is probed at its
-default port; the user picks a provider, then a model from whatever is
-currently loaded/served there.
+Supports three local OpenAI-compatible servers (llama.cpp, Ollama, Docker
+Model Runner) plus a generic remote OpenAI-compatible provider for hosted
+APIs like OpenAI, Together, or Groq.
 """
 from __future__ import annotations
 
@@ -31,17 +31,19 @@ class Provider:
     key: str
     label: str
     default_base_url: str
-    chat_base_url: str  # OpenAI client base_url (must end at /v1)
-    probe: Callable[[str], list[str]]
+    chat_base_url_suffix: str  # Appended to base_url for the OpenAI client base_url
+    probe: Callable[..., list[str]]
+    needs_api_key: bool
     notes: str
 
 
-def _probe_openai_models(base_url: str) -> list[str]:
-    r = requests.get(f"{base_url.rstrip('/')}/models", timeout=2)
+def _probe_openai_models(api_url: str, api_key: str = "") -> list[str]:
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+    r = requests.get(f"{api_url.rstrip('/')}/models", timeout=5, headers=headers)
     r.raise_for_status()
     payload = r.json()
     items = payload.get("data") or payload.get("models") or []
-    out = []
+    out: list[str] = []
     for it in items:
         if isinstance(it, str):
             out.append(it)
@@ -49,50 +51,66 @@ def _probe_openai_models(base_url: str) -> list[str]:
             mid = it.get("id") or it.get("name")
             if mid:
                 out.append(mid)
-    return out
+    return sorted(out)
 
 
-def probe_llamacpp(base_url: str) -> list[str]:
+def probe_llamacpp(base_url: str, api_key: str = "") -> list[str]:
     # llama.cpp serves /v1/models even when only one model is loaded.
     return _probe_openai_models(f"{base_url.rstrip('/')}/v1")
 
 
-def probe_ollama(base_url: str) -> list[str]:
+def probe_ollama(base_url: str, api_key: str = "") -> list[str]:
     # Ollama's native API exposes locally-pulled models at /api/tags.
     r = requests.get(f"{base_url.rstrip('/')}/api/tags", timeout=2)
     r.raise_for_status()
-    return [m["name"] for m in r.json().get("models", []) if m.get("name")]
+    return sorted(m["name"] for m in r.json().get("models", []) if m.get("name"))
 
 
-def probe_docker_model_runner(base_url: str) -> list[str]:
+def probe_docker(base_url: str, api_key: str = "") -> list[str]:
     # Docker Model Runner exposes OpenAI under /engines/v1.
     return _probe_openai_models(f"{base_url.rstrip('/')}/engines/v1")
+
+
+def probe_remote(base_url: str, api_key: str = "") -> list[str]:
+    return _probe_openai_models(base_url, api_key)
 
 
 PROVIDERS: dict[str, Provider] = {
     "llamacpp": Provider(
         key="llamacpp",
-        label="llama.cpp",
+        label="llama.cpp (local)",
         default_base_url="http://localhost:8080",
-        chat_base_url="http://localhost:8080/v1",
+        chat_base_url_suffix="/v1",
         probe=probe_llamacpp,
+        needs_api_key=False,
         notes="Default `pixi run serve` port for the llamacpp capability is 8080.",
     ),
     "ollama": Provider(
         key="ollama",
-        label="Ollama",
+        label="Ollama (local)",
         default_base_url="http://localhost:11434",
-        chat_base_url="http://localhost:11434/v1",
+        chat_base_url_suffix="/v1",
         probe=probe_ollama,
+        needs_api_key=False,
         notes="Start with `ollama serve`; the desktop app starts it automatically.",
     ),
     "docker": Provider(
         key="docker",
-        label="Docker Model Runner",
+        label="Docker Model Runner (local)",
         default_base_url="http://localhost:12434",
-        chat_base_url="http://localhost:12434/engines/v1",
-        probe=probe_docker_model_runner,
+        chat_base_url_suffix="/engines/v1",
+        probe=probe_docker,
+        needs_api_key=False,
         notes="Enable Model Runner in Docker Desktop and pull a model with `docker model pull`.",
+    ),
+    "remote": Provider(
+        key="remote",
+        label="Remote (OpenAI-compatible)",
+        default_base_url="https://api.openai.com/v1",
+        chat_base_url_suffix="",
+        probe=probe_remote,
+        needs_api_key=True,
+        notes="Any OpenAI-compatible API. Examples: api.openai.com/v1, api.together.xyz/v1, api.groq.com/openai/v1.",
     ),
 }
 
@@ -141,11 +159,21 @@ with st.expander("Settings", expanded=ss.df is None):
         base_url = st.text_input(
             "Base URL", value=provider.default_base_url, key=f"base_{provider_key}"
         )
+        api_key = ""
+        if provider.needs_api_key:
+            api_key = st.text_input(
+                "API key", value="", type="password", key=f"key_{provider_key}"
+            )
         st.caption(provider.notes)
+        if provider.needs_api_key:
+            st.warning(
+                "⚠ Using a remote provider sends your data (including the CSV "
+                "sample and summary statistics) off this device to a third-party API."
+            )
 
         if st.button("Scan for running models", use_container_width=True):
             try:
-                models = provider.probe(base_url)
+                models = provider.probe(base_url, api_key)
                 ss.models_for_provider[provider_key] = models
                 if models:
                     st.success(f"Found {len(models)} model(s).")
@@ -246,7 +274,10 @@ if prompt:
         "but compute final answers yourself from the sample and stats above. If a question requires "
         "the full dataset and the sample is insufficient, say so explicitly."
     )
-    client = OpenAI(base_url=provider.chat_base_url, api_key="not-needed")
+    client = OpenAI(
+        base_url=f"{base_url.rstrip('/')}{provider.chat_base_url_suffix}",
+        api_key=api_key if (provider.needs_api_key and api_key) else "not-needed",
+    )
     llm_messages = [{"role": "system", "content": system}] + [
         {"role": m["role"], "content": m["content"]} for m in ss.messages
     ]
