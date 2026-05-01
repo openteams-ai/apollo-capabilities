@@ -1,0 +1,7 @@
+.pixi/
+.env
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
