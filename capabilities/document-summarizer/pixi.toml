@@ -1,0 +1,36 @@
+[workspace]
+name = "document-summarizer"
+version = "0.1.0"
+description = "Upload a document (txt, md, pdf, docx) and summarize it with a local llama.cpp LLM"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[dependencies]
+python = ">=3.11,<3.13"
+streamlit = ">=1.40,<2"
+requests = ">=2.31,<3"
+openai = ">=1.40,<2"
+pypdf = ">=5.0,<6"
+python-docx = ">=1.1,<2"
+
+[tool.nebi.bundle]
+include = ["app.py", "sample_document.md"]
+
+[tool.nebi.capability]
+spec-version = "0.1.0"
+
+[tool.nebi.capability.openteams.document-summarizer]
+name = "Document Summarizer"
+description = "Upload a document (txt, md, pdf, docx) and summarize it with a local llama.cpp LLM"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/document-summarizer/icon.png"
+author = { name = "OpenTeams", email = "info@openteams.com" }
+tags = ["document", "summarization", "pdf", "docx", "llm", "local", "llama.cpp"]
+default-target = "local"
+
+[tool.nebi.capability.openteams.document-summarizer.targets.local]
+task = "launch"
+environment = "default"
+runs-in = "browser"
+
+[tasks]
+launch = { cmd = "streamlit run app.py --server.headless true --browser.gatherUsageStats false" }
