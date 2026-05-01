@@ -1,7 +1,18 @@
-import json, os, platform, re, shutil, subprocess, sys, tarfile, urllib.request, zipfile
+import json
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import tarfile
+import urllib.error
+import urllib.request
+import zipfile
 
 BIN_DIR = 'bin'
 MARKER = os.path.join(BIN_DIR, '.llamacpp_version')
+SERVER_BINARY = os.path.join(BIN_DIR, 'llama-server.exe' if sys.platform == 'win32' else 'llama-server')
 BACKEND = os.environ.get('LLAMA_BACKEND', 'cpu')
 
 
@@ -66,7 +77,10 @@ def pick_cudart(assets, selected):
 def detect_asset(assets, local_cuda=None):
     plat = sys.platform
     arch = platform.machine().lower()
-    first = lambda pred: next((a for a in assets if pred(a['name'])), None)
+
+    def first(pred):
+        return next((a for a in assets if pred(a['name'])), None)
+
     if plat == 'linux':
         if BACKEND == 'gpu':
             return first(lambda n: 'ubuntu' in n and 'vulkan' in n and 'x64' in n and n.endswith('.tar.gz'))
@@ -119,12 +133,37 @@ def make_executable(dest_dir):
             os.chmod(fp, 0o755)
 
 
-print('Checking latest llama.cpp release...')
-req = urllib.request.Request(
-    'https://api.github.com/repos/ggml-org/llama.cpp/releases/latest',
-    headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'apollo-desktop'},
-)
-data = json.loads(urllib.request.urlopen(req).read())
+def installed_version_key():
+    if not os.path.exists(MARKER) or not os.path.exists(SERVER_BINARY):
+        return None
+    with open(MARKER) as f:
+        version_key = f.read().strip()
+    if version_key.endswith(f'-{BACKEND}'):
+        return version_key
+    return None
+
+
+def release_metadata():
+    print('Checking latest llama.cpp release...')
+    req = urllib.request.Request(
+        'https://api.github.com/repos/ggml-org/llama.cpp/releases/latest',
+        headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'apollo-desktop'},
+    )
+    return json.loads(urllib.request.urlopen(req, timeout=10).read())
+
+
+try:
+    data = release_metadata()
+except (TimeoutError, urllib.error.URLError) as exc:
+    version_key = installed_version_key()
+    if version_key:
+        version = version_key.rsplit('-', 1)[0]
+        print(f'WARNING: Could not check latest llama.cpp release: {exc}')
+        print(f'Using cached llama.cpp {version} ({BACKEND}) from {BIN_DIR}/.')
+        sys.exit(0)
+    print(f'ERROR: Could not download llama.cpp release metadata: {exc}')
+    print('Connect to the internet for the first run, then retry offline after the binary is cached.')
+    sys.exit(1)
 tag = data['tag_name']
 local_cuda = None
 if sys.platform == 'win32' and BACKEND == 'gpu':
@@ -132,11 +171,9 @@ if sys.platform == 'win32' and BACKEND == 'gpu':
     if local_cuda:
         print(f'Detected local CUDA: {local_cuda[0]}.{local_cuda[1]}')
 version_key = f'{tag}-{BACKEND}'
-if os.path.exists(MARKER):
-    with open(MARKER) as f:
-        if f.read().strip() == version_key:
-            print(f'llama.cpp {tag} ({BACKEND}) already downloaded, skipping.')
-            sys.exit(0)
+if installed_version_key() == version_key:
+    print(f'llama.cpp {tag} ({BACKEND}) already downloaded, skipping.')
+    sys.exit(0)
 asset = detect_asset(data['assets'], local_cuda)
 if not asset:
     print(f'ERROR: No matching asset for {sys.platform}/{platform.machine()}/{BACKEND}')
