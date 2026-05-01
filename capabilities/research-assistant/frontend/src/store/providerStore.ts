@@ -23,7 +23,14 @@ export const useProviderStore = create<ProviderStore>()(
         return baseUrl.trim().length > 0 && model.trim().length > 0
       },
     }),
-    { name: 'provider-config' },
+    {
+      name: 'provider-config',
+      // Only the base URL and model are persisted. The API key is held in
+      // memory only and must be re-entered on every page reload.
+      partialize: (state) => ({
+        config: { baseUrl: state.config.baseUrl, apiKey: '', model: state.config.model },
+      }),
+    },
   ),
 )
 

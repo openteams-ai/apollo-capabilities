@@ -134,8 +134,8 @@ export function ProviderConfig({ open, onClose }: Props) {
 
         <div className="divider" />
         <div className="muted small">
-          Your API key is saved in this browser's <code>localStorage</code>. Avoid configuring
-          shared machines with sensitive keys.
+          The API key is held in memory only. Base URL and model are persisted across reloads,
+          but the key is cleared every time you reopen the app.
         </div>
       </div>
     </div>

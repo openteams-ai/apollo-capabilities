@@ -13,7 +13,6 @@ pip = "*"
 fastapi = ">=0.115,<1"
 uvicorn = { version = ">=0.30,<1", extras = ["standard"] }
 openai = ">=1.40,<2"
-python-dotenv = ">=1.0,<2"
 sse-starlette = ">=2.1,<3"
 ddgs = "*"
 
@@ -37,9 +36,4 @@ environment = "default"
 runs-in = "browser"
 
 [tasks]
-api = "uvicorn backend.main:app --reload --port 8000"
-ui = { cmd = "bun run dev", cwd = "frontend" }
-dev = { depends-on = ["api", "ui"] }
-launch = { depends-on = ["api", "ui"] }
-install-frontend = { cmd = "bun install", cwd = "frontend" }
-setup = { depends-on = ["install-frontend"] }
+launch = "uvicorn backend.main:app --port 8000"

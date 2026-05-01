@@ -2,7 +2,6 @@ import type { ProviderConfig } from '../store/providerStore'
 import { toBackendProvider } from '../store/providerStore'
 
 export type OutputMode = 'summary' | 'report' | 'pros_cons' | 'timeline' | 'open_questions'
-export type ExportTarget = 'notion' | 'linear' | 'hubspot'
 
 export interface Source {
   title: string
@@ -92,15 +91,3 @@ export function streamSession(
   return () => es.close()
 }
 
-export async function exportResult(
-  sessionId: string,
-  target: ExportTarget,
-  title?: string,
-): Promise<{ ok: boolean; detail: string; target: ExportTarget; url?: string }> {
-  const r = await fetch(`/api/research/${sessionId}/export`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ target, title }),
-  })
-  return jsonOrThrow(r)
-}

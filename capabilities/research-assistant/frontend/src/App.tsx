@@ -145,9 +145,8 @@ export default function App() {
 
                 {showLive && <StreamPanel text={streamText} toolCalls={toolCalls} active={active} />}
 
-                {turn.result && sessionId && (
+                {turn.result && (
                   <ResultView
-                    sessionId={sessionId}
                     topic={turn.topic}
                     content={turn.result}
                     sources={turn.sources}
