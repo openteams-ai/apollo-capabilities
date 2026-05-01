@@ -26,7 +26,7 @@ npm install && npm run build   # or bun install && bun run build
 
 ### Workflow
 
-1. Click **Provider** in the top right and configure a base URL, API key, and model. Use the presets to pre-fill common providers, then click **Test connection** to populate the model dropdown.
+1. Click **Provider** in the top right and configure a base URL, API key, and model. Use the presets to pre-fill common providers, then click **Connect** to populate the model dropdown.
 2. Type a research topic and pick an output mode (Summary, Report, Pros & Cons, Timeline, Open Questions).
 3. Click **Research**. The agent calls `web_search`, streams the draft as it writes, and posts the final synthesized result with citations.
 4. Use the follow-up bar to extend the conversation in the same session.

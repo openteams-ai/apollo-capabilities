@@ -116,13 +116,13 @@ export function ProviderConfig({ open, onClose }: Props) {
             />
           )}
           <span className="muted small">
-            Click "Test connection" to populate the model list, or type a model name directly.
+            Click "Connect" to populate the model list, or type a model name directly.
           </span>
         </div>
 
         <div className="row">
           <button onClick={test} disabled={status.kind === 'loading'}>
-            {status.kind === 'loading' ? 'Testing…' : 'Test connection'}
+            {status.kind === 'loading' ? 'Connecting…' : 'Connect'}
           </button>
           <button className="primary" onClick={save} disabled={!baseUrl.trim() || !model.trim()}>
             Save

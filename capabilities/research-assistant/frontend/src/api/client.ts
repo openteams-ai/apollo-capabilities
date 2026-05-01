@@ -1,6 +1,8 @@
 import type { ProviderConfig } from '../store/providerStore'
 import { toBackendProvider } from '../store/providerStore'
 
+const API_BASE = 'http://localhost:8765'
+
 export type OutputMode = 'summary' | 'report' | 'pros_cons' | 'timeline' | 'open_questions'
 
 export interface Source {
@@ -30,7 +32,7 @@ async function jsonOrThrow<T>(r: Response): Promise<T> {
 
 export async function fetchModels(baseUrl: string, apiKey: string): Promise<{ models: string[]; error?: string }> {
   const params = new URLSearchParams({ base_url: baseUrl, api_key: apiKey })
-  const r = await fetch(`/api/provider/models?${params}`)
+  const r = await fetch(`${API_BASE}/api/provider/models?${params}`)
   return jsonOrThrow(r)
 }
 
@@ -39,7 +41,7 @@ export async function startResearch(input: {
   outputMode: OutputMode
   provider: ProviderConfig
 }): Promise<{ session_id: string }> {
-  const r = await fetch('/api/research', {
+  const r = await fetch(`${API_BASE}/api/research`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -57,7 +59,7 @@ export async function sendFollowUp(
   provider: ProviderConfig,
   outputMode?: OutputMode,
 ): Promise<{ session_id: string }> {
-  const r = await fetch(`/api/research/${sessionId}/followup`, {
+  const r = await fetch(`${API_BASE}/api/research/${sessionId}/followup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -73,7 +75,7 @@ export function streamSession(
   sessionId: string,
   onEvent: (e: StreamEvent) => void,
 ): () => void {
-  const es = new EventSource(`/api/research/${sessionId}/stream`)
+  const es = new EventSource(`${API_BASE}/api/research/${sessionId}/stream`)
   es.onmessage = (msg) => {
     try {
       const data: StreamEvent = JSON.parse(msg.data)
