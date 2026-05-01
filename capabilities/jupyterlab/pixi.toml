@@ -11,13 +11,16 @@ pandas = ">=2.2,<3"
 polars = ">=1.0,<2"
 numpy = ">=2.0,<3"
 
+[tool.nebi.bundle]
+include = ["icon.svg"]
+
 [tool.nebi.capability]
 spec-version = "0.1.0"
 
 [tool.nebi.capability.openteams.jupyterlab]
 name = "JupyterLab"
 description = "A minimal JupyterLab capability"
-icon = "https://raw.githubusercontent.com/jupyterlab/jupyterlab/refs/heads/main/docs/source/_static/jupyter_logo.svg"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/jupyterlab/icon.svg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["jupyter", "data-science"]
 default-target = "local"
