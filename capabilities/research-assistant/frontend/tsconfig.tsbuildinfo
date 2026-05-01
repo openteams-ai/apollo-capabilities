@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/api/client.ts","./src/components/followupbar.tsx","./src/components/providerconfig.tsx","./src/components/querybar.tsx","./src/components/resultview.tsx","./src/components/streampanel.tsx","./src/store/providerstore.ts"],"version":"5.9.3"}
