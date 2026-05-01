@@ -14,7 +14,7 @@ requests = ">=2.31,<3"
 openai = ">=1.40,<2"
 
 [tool.nebi.bundle]
-include = ["app.py", "sample_orders.csv"]
+include = ["app.py", "sample_orders.csv", "icon.jpg"]
 
 [tool.nebi.capability]
 spec-version = "0.1.0"
@@ -22,7 +22,7 @@ spec-version = "0.1.0"
 [tool.nebi.capability.openteams.data-explorer]
 name = "Data Explorer"
 description = "Upload a CSV, browse it as a table, and chat with the data using a local LLM"
-icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/data-explorer/icon.png"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/data-explorer/icon.jpg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["data", "csv", "pandas", "llm", "chat", "local"]
 default-target = "local"

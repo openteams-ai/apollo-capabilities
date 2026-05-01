@@ -14,7 +14,7 @@ pypdf = ">=5.0,<6"
 python-docx = ">=1.1,<2"
 
 [tool.nebi.bundle]
-include = ["app.py", "sample_document.md"]
+include = ["app.py", "sample_document.md", "icon.jpg"]
 
 [tool.nebi.capability]
 spec-version = "0.1.0"
@@ -22,7 +22,7 @@ spec-version = "0.1.0"
 [tool.nebi.capability.openteams.document-summarizer]
 name = "Document Summarizer"
 description = "Upload a document (txt, md, pdf, docx) and summarize it with a local llama.cpp LLM"
-icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/document-summarizer/icon.png"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/document-summarizer/icon.jpg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["document", "summarization", "pdf", "docx", "llm", "local", "llama.cpp"]
 default-target = "local"

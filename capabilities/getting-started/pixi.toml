@@ -8,6 +8,9 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 [dependencies]
 python = ">=3.11"
 
+[tool.nebi.bundle]
+include = ["icon.jpeg"]
+
 [tool.nebi.capability]
 spec-version = "0.1.0"
 
