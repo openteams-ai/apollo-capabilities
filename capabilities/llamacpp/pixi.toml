@@ -7,9 +7,10 @@ platforms = ["linux-64", "osx-arm64", "win-64"]
 
 [dependencies]
 python = "3.12.*"
+huggingface_hub = "*"
 
 [tool.nebi.bundle]
-include = ["app.py", "icon.jpg"]
+include = ["app.py", "serve.py", "icon.jpg"]
 
 [tool.nebi.capability]
 spec-version = "0.1.0"
@@ -55,32 +56,23 @@ download-llamacpp = { cmd = "python app.py", env = { LLAMA_BACKEND = "cpu" } }
 
 [feature.cpu.target.linux-64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
-  -hf "{{ model }}" \
-  -c 8192 \
-  --n-gpu-layers 0 \
-  --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1"""
+cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH python serve.py \
+  --model "{{ model }}" \
+  --backend cpu"""
 depends-on = ["download-llamacpp"]
 
 [feature.cpu.target.osx-arm64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models bin/llama-server \
-  -hf "{{ model }}" \
-  -c 8192 \
-  --n-gpu-layers 0 \
-  --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1"""
+cmd = """HF_HOME=models python serve.py \
+  --model "{{ model }}" \
+  --backend cpu"""
 depends-on = ["download-llamacpp"]
 
 [feature.cpu.target.win-64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models bin/llama-server \
-  -hf "{{ model }}" \
-  -c 8192 \
-  --n-gpu-layers 0 \
-  --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1"""
+cmd = """HF_HOME=models python serve.py \
+  --model "{{ model }}" \
+  --backend cpu"""
 depends-on = ["download-llamacpp"]
 
 # ===========================================================================
@@ -99,36 +91,24 @@ download-llamacpp = { cmd = "python app.py", env = { LLAMA_BACKEND = "gpu" } }
 
 [feature.gpu.target.linux-64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH bin/llama-server \
-  -hf "{{ model }}" \
-  -fa on \
-  -c 24000 \
-  --n-gpu-layers 999 \
-  --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -mg 0 -np 1"""
+cmd = """HF_HOME=models LD_LIBRARY_PATH=bin:$LD_LIBRARY_PATH python serve.py \
+  --model "{{ model }}" \
+  --backend gpu"""
 depends-on = ["download-llamacpp"]
 
 [feature.gpu.target.osx-arm64.tasks.serve]
 # macOS Metal is built-in; -ngl 999 offloads to Apple GPU
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models bin/llama-server \
-  -hf "{{ model }}" \
-  -fa on \
-  -c 24000 \
-  --n-gpu-layers 999 \
-  --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -np 1"""
+cmd = """HF_HOME=models python serve.py \
+  --model "{{ model }}" \
+  --backend gpu"""
 depends-on = ["download-llamacpp"]
 
 [feature.gpu.target.win-64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models PATH="bin:$PATH" bin/llama-server \
-  -hf "{{ model }}" \
-  -fa on \
-  -c 24000 \
-  --n-gpu-layers 999 \
-  --top-k 20 --top-p 0.95 --min-p 0.0 \
-  --jinja --temp 0.7 -mg 0 -np 1"""
+cmd = """HF_HOME=models PATH="bin:$PATH" python serve.py \
+  --model "{{ model }}" \
+  --backend gpu"""
 depends-on = ["download-llamacpp"]
 
 # ===========================================================================
