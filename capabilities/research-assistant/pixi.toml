@@ -33,7 +33,7 @@ default-target = "local"
 [tool.nebi.capability.openteams.research-assistant.targets.local]
 task = "launch"
 environment = "default"
-runs-in = "browser"
+runs-in = "app"
 
 [tasks]
 launch = "uvicorn backend.main:app --port 8765"
