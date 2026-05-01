@@ -23,6 +23,7 @@ Each capability lives in its own directory and is a standalone pixi project. The
 - `llamacpp` -  Runs a local llama.cpp server that automatically downloads model GGUFs from HuggingFace.
 - `comfyui` - Runs a local ComfyUI server with base models.
 - `data-explorer` — upload a CSV, browse it as a table, and chat with the data using a local LLM (llama.cpp, Ollama, or Docker Model Runner).
+- `document-summarizer` — upload a document (txt, md, pdf, docx) and summarize it with a local llama.cpp LLM.
 
 ## Usage
 
