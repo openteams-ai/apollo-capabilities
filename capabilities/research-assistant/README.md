@@ -13,7 +13,7 @@ Requires:
 pixi run launch
 ```
 
-Open http://localhost:8000. The pre-built frontend is served by the FastAPI backend, so no Node/Bun toolchain is needed to run the app.
+Open http://localhost:8765. The pre-built frontend is served by the FastAPI backend, so no Node/Bun toolchain is needed to run the app.
 
 ### Rebuilding the frontend (maintainers only)
 
@@ -71,7 +71,7 @@ research-assistant/
 │       └── synthesizer.py     # output-mode reformatting
 └── frontend/
     ├── package.json
-    ├── vite.config.ts         # proxies /api → :8000
+    ├── vite.config.ts         # proxies /api → :8765 (dev only)
     └── src/
         ├── App.tsx
         ├── store/providerStore.ts   # Zustand + localStorage persist
