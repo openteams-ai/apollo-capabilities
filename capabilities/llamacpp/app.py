@@ -10,6 +10,12 @@ import urllib.error
 import urllib.request
 import zipfile
 
+if sys.platform == 'win32':
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, 'reconfigure', None)
+        if reconfigure is not None:
+            reconfigure(encoding='utf-8', errors='replace')
+
 BIN_DIR = 'bin'
 MARKER = os.path.join(BIN_DIR, '.llamacpp_version')
 SERVER_BINARY = os.path.join(BIN_DIR, 'llama-server.exe' if sys.platform == 'win32' else 'llama-server')

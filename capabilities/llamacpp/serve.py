@@ -6,6 +6,12 @@ import shutil
 import subprocess
 import sys
 
+if sys.platform == 'win32':
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, 'reconfigure', None)
+        if reconfigure is not None:
+            reconfigure(encoding='utf-8', errors='replace')
+
 from huggingface_hub import HfApi, snapshot_download
 
 
@@ -115,6 +121,8 @@ def run_with_pipes(command, env):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
+        encoding='utf-8',
+        errors='replace',
         bufsize=1,
         env=env,
     )
@@ -155,6 +163,8 @@ def ensure_model_cached(model):
     env = os.environ.copy()
     env.setdefault('HF_HOME', HF_HOME)
     env.setdefault('PYTHONUNBUFFERED', '1')
+    env.setdefault('PYTHONIOENCODING', 'utf-8')
+    env.setdefault('PYTHONUTF8', '1')
 
     hf = shutil.which('hf')
     if not hf:
