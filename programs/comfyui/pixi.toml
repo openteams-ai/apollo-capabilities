@@ -8,18 +8,18 @@ version = "0.16.4"
 [tool.nebi.bundle]
 include = ["app.py", "zimage_turbo_workflow.json", "icon.jpg"]
 
-[tool.nebi.capability]
+[tool.nebi.program]
 spec-version = "0.1.0"
 
-[tool.nebi.capability.openteams.comfyui]
+[tool.nebi.program.openteams.comfyui]
 name = "ComfyUI"
 description = "Node-based image generation GUI. Installed and launched via comfy-cli, which handles GPU-specific PyTorch wheel selection (NVIDIA CUDA on Linux/Windows, MPS on Apple Silicon)."
-icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/comfyui/icon.jpg"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-programs/refs/heads/main/programs/comfyui/icon.jpg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["comfyui", "image-generation", "diffusion"]
 default-target = "local"
 
-[tool.nebi.capability.openteams.comfyui.targets.local]
+[tool.nebi.program.openteams.comfyui.targets.local]
 task = "serve"
 environment = "default"
 runs-in = "background"

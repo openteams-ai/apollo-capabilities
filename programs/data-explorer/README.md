@@ -32,8 +32,8 @@ The app keeps the dataframe in memory and forwards a compact context (schema, th
 
 The base URL is editable in the sidebar if you've moved a provider off its default port or want to point the remote provider at a different host (Together, Groq, etc.). All four runtimes expose an OpenAI-compatible `chat/completions` endpoint, so the app uses the `openai` SDK with the appropriate `base_url`.
 
-### Companion capabilities
+### Companion programs
 
-- The [`llamacpp`](../llamacpp) capability in this repo runs a llama.cpp server on `http://localhost:8080` — start it (`pixi run -e gpu serve` or `pixi run serve`) and Data Explorer's default llama.cpp settings will Just Work.
+- The [`llamacpp`](../llamacpp) program in this repo runs a llama.cpp server on `http://localhost:8080` — start it (`pixi run -e gpu serve` or `pixi run serve`) and Data Explorer's default llama.cpp settings will Just Work.
 - For Ollama, install [Ollama](https://ollama.com) and `ollama pull` any model. The desktop app starts the daemon for you.
 - For Docker Model Runner, enable Model Runner in Docker Desktop settings and `docker model pull <model>`.

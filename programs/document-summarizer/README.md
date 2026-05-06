@@ -36,11 +36,11 @@ Streamlit listens on `http://localhost:8501` by default.
 | `.pdf` | [`pypdf`](https://pypdf.readthedocs.io) text extraction, page by page |
 | `.docx` | [`python-docx`](https://python-docx.readthedocs.io) — paragraphs and tables |
 
-The full extracted text is sent to the chosen provider as the user message. Make sure the model has a context window large enough for the document; the default `gemma-4-E4B-it` model in the companion `llamacpp` capability is configured with an 8k–24k context.
+The full extracted text is sent to the chosen provider as the user message. Make sure the model has a context window large enough for the document; the default `gemma-4-E4B-it` model in the companion `llamacpp` program is configured with an 8k–24k context.
 
-### Companion capability
+### Companion program
 
-The [`llamacpp`](../llamacpp) capability in this repo runs a llama.cpp server on `http://localhost:8080`. Start it in another terminal with:
+The [`llamacpp`](../llamacpp) program in this repo runs a llama.cpp server on `http://localhost:8080`. Start it in another terminal with:
 
 ```bash
 cd ../llamacpp

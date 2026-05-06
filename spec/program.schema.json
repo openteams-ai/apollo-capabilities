@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/main/spec/capability.schema.json",
-  "title": "Collab Capability Manifest",
-  "description": "JSON Schema for Collab capability metadata embedded in a Pixi manifest. This schema applies after the TOML manifest has been parsed into a generic object representation.",
+  "$id": "https://raw.githubusercontent.com/openteams-ai/apollo-programs/main/spec/program.schema.json",
+  "title": "Collab program Manifest",
+  "description": "JSON Schema for Collab program metadata embedded in a Pixi manifest. This schema applies after the TOML manifest has been parsed into a generic object representation.",
   "type": "object",
   "required": ["workspace", "tool", "tasks"],
   "properties": {
@@ -41,9 +41,9 @@
       "properties": {
         "nebi": {
           "type": "object",
-          "required": ["capability"],
+          "required": ["program"],
           "properties": {
-            "capability": {
+            "program": {
               "type": "object",
               "required": ["spec-version"],
               "properties": {
@@ -63,7 +63,7 @@
   },
   "additionalProperties": true,
   "$defs": {
-    "capabilityKey": {
+    "programKey": {
       "type": "string",
       "minLength": 1,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
@@ -71,8 +71,8 @@
     "orgNamespace": {
       "type": "object",
       "minProperties": 1,
-      "propertyNames": { "$ref": "#/$defs/capabilityKey" },
-      "additionalProperties": { "$ref": "#/$defs/capabilityDefinition" }
+      "propertyNames": { "$ref": "#/$defs/programKey" },
+      "additionalProperties": { "$ref": "#/$defs/programDefinition" }
     },
     "taskDefinition": {
       "anyOf": [
@@ -98,7 +98,7 @@
         "runs-in": {
           "type": "string",
           "enum": ["app", "browser", "background"],
-          "description": "How the capability surfaces to the user. 'app' opens a native window, 'browser' opens a web URL, 'background' runs without a UI."
+          "description": "How the program surfaces to the user. 'app' opens a native window, 'browser' opens a web URL, 'background' runs without a UI."
         }
       },
       "additionalProperties": false
@@ -112,7 +112,7 @@
       "additionalProperties": false,
       "minProperties": 1
     },
-    "capabilityDefinition": {
+    "programDefinition": {
       "type": "object",
       "required": ["name", "description", "default-target", "targets"],
       "properties": {

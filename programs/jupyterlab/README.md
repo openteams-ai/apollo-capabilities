@@ -1,6 +1,6 @@
 # JupyterLab
 
-A minimal JupyterLab with base packages and capability managed with [pixi](https://pixi.sh).
+A minimal JupyterLab with base packages and program managed with [pixi](https://pixi.sh).
 
 ## Usage
 

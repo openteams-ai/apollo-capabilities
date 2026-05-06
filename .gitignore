@@ -18,6 +18,6 @@ Thumbs.db
 *.swp
 *.swo
 
-# Capabilities
-capabilities/**/bin
-capabilities/**/models
+# programs
+programs/**/bin
+programs/**/models

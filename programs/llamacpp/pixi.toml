@@ -12,18 +12,18 @@ huggingface_hub = "*"
 [tool.nebi.bundle]
 include = ["app.py", "serve.py", "icon.jpg"]
 
-[tool.nebi.capability]
+[tool.nebi.program]
 spec-version = "0.1.0"
 
-[tool.nebi.capability.openteams.llamacpp]
+[tool.nebi.program.openteams.llamacpp]
 name = "llama.cpp Local Server"
 description = "OpenAI-compatible local inference server. Auto-detects OS/arch/GPU, downloads the matching llama.cpp build and model GGUFs, then serves on llama.cpp's default port 8080."
-icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/llamacpp/icon.jpg"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-programs/refs/heads/main/programs/llamacpp/icon.jpg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["llm", "inference", "llama.cpp", "local"]
 default-target = "local"
 
-[tool.nebi.capability.openteams.llamacpp.targets.local]
+[tool.nebi.program.openteams.llamacpp.targets.local]
 task = "serve"
 environment = "default"
 runs-in = "background"

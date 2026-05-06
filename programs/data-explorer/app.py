@@ -83,7 +83,7 @@ PROVIDERS: dict[str, Provider] = {
         chat_base_url_suffix="/v1",
         probe=probe_llamacpp,
         needs_api_key=False,
-        notes="Default `pixi run serve` port for the llamacpp capability is 8080.",
+        notes="Default `pixi run serve` port for the llamacpp program is 8080.",
     ),
     "ollama": Provider(
         key="ollama",

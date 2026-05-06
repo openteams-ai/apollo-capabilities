@@ -14,18 +14,18 @@ numpy = ">=2.0,<3"
 [tool.nebi.bundle]
 include = ["icon.svg"]
 
-[tool.nebi.capability]
+[tool.nebi.program]
 spec-version = "0.1.0"
 
-[tool.nebi.capability.openteams.jupyterlab]
+[tool.nebi.program.openteams.jupyterlab]
 name = "JupyterLab"
-description = "A minimal JupyterLab capability"
-icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/jupyterlab/icon.svg"
+description = "A minimal JupyterLab program"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-programs/refs/heads/main/programs/jupyterlab/icon.svg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["jupyter", "data-science"]
 default-target = "local"
 
-[tool.nebi.capability.openteams.jupyterlab.targets.local]
+[tool.nebi.program.openteams.jupyterlab.targets.local]
 task = "launch"
 environment = "default"
 runs-in = "browser"

@@ -1,4 +1,4 @@
-name: Publish Capabilities
+name: Publish programs
 
 on:
   push:
@@ -45,11 +45,11 @@ jobs:
 
       - name: Add quay.io registry
         run: |
-          echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default
+          echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --name quay --url quay.io --namespace openteams_programs --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default
 
-      - name: Push and publish capabilities
+      - name: Push and publish programs
         run: |
-          for pixi_toml in capabilities/*/pixi.toml; do
+          for pixi_toml in programs/*/pixi.toml; do
             env_dir=$(dirname "$pixi_toml")
             env_name=$(basename "$env_dir")
             version=$(grep '^version = ' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
@@ -60,7 +60,7 @@ jobs:
             curl -sf -X POST \
               -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d "{\"namespace\":\"openteams_capabilities\",\"repository\":\"${env_name}\",\"visibility\":\"public\",\"description\":\"\"}" \
+              -d "{\"namespace\":\"openteams_programs\",\"repository\":\"${env_name}\",\"visibility\":\"public\",\"description\":\"\"}" \
               "https://quay.io/api/v1/repository" \
               && echo "  -> Created ${env_name} on quay.io" \
               || echo "  -> Repository ${env_name} already exists on quay.io"
@@ -72,13 +72,13 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.QUAY_API_TOKEN }}" \
               -H "Content-Type: application/json" \
               -d '{"role":"write"}' \
-              "https://quay.io/api/v1/repository/openteams_capabilities/${env_name}/permissions/user/${encoded_username}" \
+              "https://quay.io/api/v1/repository/openteams_programs/${env_name}/permissions/user/${encoded_username}" \
               && echo "  -> Granted write access to ${{ secrets.QUAY_USERNAME }}" \
               || echo "  -> Warning: could not set write access for ${{ secrets.QUAY_USERNAME }}"
 
             cd "$env_dir"
             nebi init
-            echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --local --name quay --url quay.io --namespace openteams_capabilities --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default || echo "  -> Local registry quay already exists, skipping"
+            echo "${{ secrets.QUAY_PASSWORD }}" | nebi registry add --local --name quay --url quay.io --namespace openteams_programs --username "${{ secrets.QUAY_USERNAME }}" --password-stdin --default || echo "  -> Local registry quay already exists, skipping"
             nebi publish --local --registry quay --repo "${env_name}"
 
             cd "$GITHUB_WORKSPACE"
@@ -86,15 +86,15 @@ jobs:
 
       - name: Summary
         run: |
-          echo "## Published Capabilities" >> $GITHUB_STEP_SUMMARY
+          echo "## Published programs" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Environment | Version | Registry | Import Command |" >> $GITHUB_STEP_SUMMARY
           echo "|-------------|---------|----------|----------------|" >> $GITHUB_STEP_SUMMARY
-          for pixi_toml in capabilities/*/pixi.toml; do
+          for pixi_toml in programs/*/pixi.toml; do
             env_name=$(basename "$(dirname "$pixi_toml")")
             version=$(grep '^version = ' "$pixi_toml" | sed 's/.*= *"\(.*\)"/\1/')
-            ref="quay.io/openteams_capabilities/${env_name}:latest"
-            echo "| ${env_name} | ${version} | [quay.io](https://quay.io/repository/openteams_capabilities/${env_name}) | \`nebi import ${ref}\` |" >> $GITHUB_STEP_SUMMARY
+            ref="quay.io/openteams_programs/${env_name}:latest"
+            echo "| ${env_name} | ${version} | [quay.io](https://quay.io/repository/openteams_programs/${env_name}) | \`nebi import ${ref}\` |" >> $GITHUB_STEP_SUMMARY
           done
 
       - name: Shutdown server
@@ -116,12 +116,12 @@ jobs:
             | tar xz -C /usr/local/bin nebi
           nebi version
 
-      - name: Import capabilities from registry
+      - name: Import programs from registry
         run: |
-          for pixi_toml in capabilities/*/pixi.toml; do
+          for pixi_toml in programs/*/pixi.toml; do
             env_name=$(basename "$(dirname "$pixi_toml")")
             echo "==> Importing ${env_name}:latest"
-            nebi import "quay.io/openteams_capabilities/${env_name}:latest" -o "/tmp/${env_name}" --force
+            nebi import "quay.io/openteams_programs/${env_name}:latest" -o "/tmp/${env_name}" --force
 
             if [ ! -f "/tmp/${env_name}/pixi.toml" ]; then
               echo "ERROR: pixi.toml not found after importing ${env_name}"

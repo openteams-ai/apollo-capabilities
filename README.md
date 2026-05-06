@@ -1,6 +1,6 @@
-# Collab Capabilities
+# Collab programs
 
-A collection of reusable [Nebi](https://nebi.nebari.dev) capabilities — self-contained `pixi.toml` files that define a launch task and dependencies for common workflows.
+A collection of reusable [Nebi](https://nebi.nebari.dev) programs — self-contained `pixi.toml` files that define a launch task and dependencies for common workflows.
 
 ## Structure
 
@@ -8,17 +8,17 @@ A collection of reusable [Nebi](https://nebi.nebari.dev) capabilities — self-c
 spec/
   README.md
   SCHEMA.md
-  capability.schema.json
-capabilities/
-  <capability-name>/
+  program.schema.json
+programs/
+  <program-name>/
     pixi.toml
 ```
 
-Each capability lives in its own directory and is a standalone pixi project. The `spec/` directory contains the capability standard; `capabilities/` contains only capability implementations.
+Each program lives in its own directory and is a standalone pixi project. The `spec/` directory contains the program standard; `programs/` contains only program implementations.
 
-## Included capabilities
+## Included programs
 
-- `getting-started` - a welcome and getting started guide for Collab capabilities
+- `getting-started` - a welcome and getting started guide for Collab programs
 - `jupyterlab` — launches JupyterLab with a base data stack
 - `llamacpp` -  Runs a local llama.cpp server that automatically downloads model GGUFs from HuggingFace.
 - `comfyui` - Runs a local ComfyUI server with base models.
@@ -29,10 +29,10 @@ Each capability lives in its own directory and is a standalone pixi project. The
 
 ### From the OCI registry (recommended)
 
-Capabilities are published to `quay.io/openteams_capabilities`. Import one directly with [Nebi](https://nebi.nebari.dev):
+programs are published to `quay.io/openteams_programs`. Import one directly with [Nebi](https://nebi.nebari.dev):
 
 ```sh
-nebi import quay.io/openteams_capabilities/getting-started:latest
+nebi import quay.io/openteams_programs/getting-started:latest
 ```
 
 Then run it:
@@ -43,25 +43,25 @@ pixi run launch
 
 ### Local usage
 
-Clone this repository, navigate into any capability directory, and run its tasks with pixi:
+Clone this repository, navigate into any program directory, and run its tasks with pixi:
 
 ```sh
-cd capabilities/hello-world
+cd programs/hello-world
 pixi run launch
 ```
 
-## Adding a Capability
+## Adding a program
 
-1. Create a new directory under `capabilities/`.
-2. Add a `pixi.toml` following the specification in [`spec/SCHEMA.md`](spec/SCHEMA.md) and [`spec/capability.schema.json`](spec/capability.schema.json).
+1. Create a new directory under `programs/`.
+2. Add a `pixi.toml` following the specification in [`spec/SCHEMA.md`](spec/SCHEMA.md) and [`spec/program.schema.json`](spec/program.schema.json).
 3. Optionally add a `README.md` documenting tasks and any environment variables.
 
 ## Specification
 
-The capability standard lives under [`spec/`](spec/):
+The program standard lives under [`spec/`](spec/):
 
 - [`spec/README.md`](spec/README.md) — overview of the specification artifacts
 - [`spec/SCHEMA.md`](spec/SCHEMA.md) — human-readable schema, semantics, and conventions
-- [`spec/capability.schema.json`](spec/capability.schema.json) — machine-readable JSON Schema for validating parsed manifests
+- [`spec/program.schema.json`](spec/program.schema.json) — machine-readable JSON Schema for validating parsed manifests
 
 The root README intentionally keeps only a short summary so the specification does not drift across multiple copies.
