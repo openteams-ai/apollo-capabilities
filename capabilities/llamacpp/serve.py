@@ -138,14 +138,50 @@ def download_with_python(repo_id, files):
     snapshot_download(repo_id=repo_id, allow_patterns=files, cache_dir=cache_dir)
 
 
+def find_cached_repo_files(repo_id, hf_home):
+    cache_dir = os.path.join(hf_home, 'hub')
+    repo_dir = os.path.join(cache_dir, 'models--' + repo_id.replace('/', '--'))
+    snapshots_dir = os.path.join(repo_dir, 'snapshots')
+    if not os.path.isdir(snapshots_dir):
+        return []
+    snapshots = [d for d in os.listdir(snapshots_dir) if os.path.isdir(os.path.join(snapshots_dir, d))]
+    if not snapshots:
+        return []
+    snapshot_dir = os.path.join(snapshots_dir, sorted(snapshots)[-1])
+    files = []
+    for root, _, filenames in os.walk(snapshot_dir):
+        for filename in filenames:
+            rel = os.path.relpath(os.path.join(root, filename), snapshot_dir)
+            files.append(rel.replace(os.sep, '/'))
+    return files
+
+
 def ensure_model_cached(model):
     repo_id, selector = parse_model_spec(model)
     status(f'Preparing Hugging Face model cache for {model}')
-    status(f'Using HF_HOME={os.environ.get("HF_HOME", HF_HOME)}')
+    hf_home = os.environ.get('HF_HOME', HF_HOME)
+    status(f'Using HF_HOME={hf_home}')
 
     api = HfApi()
     status(f'Checking repository files for {repo_id} ...')
-    files = api.list_repo_files(repo_id=repo_id)
+    try:
+        files = api.list_repo_files(repo_id=repo_id)
+    except Exception as exc:
+        cached = find_cached_repo_files(repo_id, hf_home)
+        if not cached:
+            raise RuntimeError(
+                f'Could not reach Hugging Face ({exc}) and no cached files were found for {repo_id} '
+                f'in {hf_home}/hub. Connect to the internet for the first run, then retry offline.'
+            ) from exc
+        status(f'WARNING: Could not contact Hugging Face: {exc}')
+        status(f'Using cached files from {hf_home}/hub.')
+        selected_files = select_model_files(cached, selector)
+        status('Selected cached model files:')
+        for path in selected_files:
+            status(f'  {path}')
+        os.environ['HF_HUB_OFFLINE'] = '1'
+        return
+
     selected_files = select_model_files(files, selector)
 
     status('Selected model cache files:')
