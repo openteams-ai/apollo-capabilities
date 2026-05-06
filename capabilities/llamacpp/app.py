@@ -45,6 +45,18 @@ def detect_local_cuda():
     return None
 
 
+def require_nvidia_gpu():
+    if os.environ.get('CONDA_OVERRIDE_CUDA'):
+        return
+    try:
+        subprocess.check_output(['nvidia-smi'], stderr=subprocess.DEVNULL)
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        print('ERROR: GPU backend requested but no NVIDIA GPU detected (nvidia-smi failed).')
+        print('Install NVIDIA drivers, or run the cpu environment instead: pixi run -e cpu serve')
+        print('To bypass this check, set CONDA_OVERRIDE_CUDA=12.4 in the environment.')
+        sys.exit(1)
+
+
 def pick_cuda_asset(assets, local_cuda, prefix='win', suffix='.zip'):
     cands = [a for a in assets if prefix in a['name'] and 'cuda' in a['name'] and 'x64' in a['name'] and a['name'].endswith(suffix) and 'cudart' not in a['name']]
     if not cands:
@@ -157,6 +169,9 @@ def release_metadata():
     )
     return json.loads(urllib.request.urlopen(req, timeout=10).read())
 
+
+if BACKEND == 'gpu' and sys.platform in ('linux', 'win32'):
+    require_nvidia_gpu()
 
 try:
     data = release_metadata()
