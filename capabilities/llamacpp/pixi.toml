@@ -25,7 +25,7 @@ default-target = "local"
 
 [tool.nebi.capability.openteams.llamacpp.targets.local]
 task = "serve"
-environment = "default"
+environment = "gpu"
 runs-in = "background"
 
 # ===========================================================================
@@ -78,14 +78,11 @@ depends-on = ["download-llamacpp"]
 # ===========================================================================
 # GPU feature — Vulkan on Linux, Metal on macOS, CUDA on Windows
 #
-# system-requirements.cuda gates the environment: pixi will refuse to solve
-# the gpu env if nvidia-smi reports no CUDA support. The download script
-# then queries the exact local CUDA version to pick the best matching build.
-# Users can override detection with: CONDA_OVERRIDE_CUDA=12.4 pixi run -e gpu serve
+# GPU presence is checked at runtime in app.py rather than via pixi
+# system-requirements, because pixi system-requirements cannot be scoped
+# per-platform within a feature, and macOS GPU does not require CUDA.
+# Users can override Windows CUDA detection with: CONDA_OVERRIDE_CUDA=12.4
 # ===========================================================================
-[feature.gpu.system-requirements]
-cuda = "12"
-
 [feature.gpu.tasks]
 download-llamacpp = { cmd = "python app.py", env = { LLAMA_BACKEND = "gpu" } }
 
@@ -106,7 +103,7 @@ depends-on = ["download-llamacpp"]
 
 [feature.gpu.target.win-64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models PATH="bin:$PATH" python serve.py \
+cmd = """HF_HOME=models PATH="bin;$PATH" python serve.py \
   --model "{{ model }}" \
   --backend gpu"""
 depends-on = ["download-llamacpp"]

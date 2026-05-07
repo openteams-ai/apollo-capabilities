@@ -10,6 +10,12 @@ import urllib.error
 import urllib.request
 import zipfile
 
+if sys.platform == 'win32':
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, 'reconfigure', None)
+        if reconfigure is not None:
+            reconfigure(encoding='utf-8', errors='replace')
+
 BIN_DIR = 'bin'
 MARKER = os.path.join(BIN_DIR, '.llamacpp_version')
 SERVER_BINARY = os.path.join(BIN_DIR, 'llama-server.exe' if sys.platform == 'win32' else 'llama-server')
@@ -37,6 +43,18 @@ def detect_local_cuda():
     except (FileNotFoundError, subprocess.CalledProcessError):
         pass
     return None
+
+
+def require_nvidia_gpu():
+    if os.environ.get('CONDA_OVERRIDE_CUDA'):
+        return
+    try:
+        subprocess.check_output(['nvidia-smi'], stderr=subprocess.DEVNULL)
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        print('ERROR: GPU backend requested but no NVIDIA GPU detected (nvidia-smi failed).')
+        print('Install NVIDIA drivers, or run the cpu environment instead: pixi run -e cpu serve')
+        print('To bypass this check, set CONDA_OVERRIDE_CUDA=12.4 in the environment.')
+        sys.exit(1)
 
 
 def pick_cuda_asset(assets, local_cuda, prefix='win', suffix='.zip'):
@@ -97,10 +115,26 @@ def detect_asset(assets, local_cuda=None):
     sys.exit(1)
 
 
+PROGRESS_INTERVAL_MB = 5
+
+
+def _progress_reporter():
+    last_mb = [0.0]
+    def hook(chunks, block_size, total_size):
+        if total_size <= 0:
+            return
+        downloaded = chunks * block_size
+        mb = downloaded / (1024 ** 2)
+        total_mb = total_size / (1024 ** 2)
+        if mb - last_mb[0] >= PROGRESS_INTERVAL_MB or downloaded >= total_size:
+            print(f'  {mb:.1f} / {total_mb:.1f} MB', flush=True)
+            last_mb[0] = mb
+    return hook
+
+
 def download_file(url, dest):
-    print(f'Downloading {os.path.basename(dest)} ...')
-    urllib.request.urlretrieve(url, dest, reporthook=lambda c, bs, ts: print(f'  {c*bs/(1024**2):.1f} MB', end='\r') if ts > 0 else None)
-    print()
+    print(f'Downloading {os.path.basename(dest)} ...', flush=True)
+    urllib.request.urlretrieve(url, dest, reporthook=_progress_reporter())
 
 
 def extract(archive, dest_dir):
@@ -151,6 +185,9 @@ def release_metadata():
     )
     return json.loads(urllib.request.urlopen(req, timeout=10).read())
 
+
+if BACKEND == 'gpu' and sys.platform in ('linux', 'win32'):
+    require_nvidia_gpu()
 
 try:
     data = release_metadata()
