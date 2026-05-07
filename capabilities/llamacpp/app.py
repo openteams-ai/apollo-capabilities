@@ -115,10 +115,26 @@ def detect_asset(assets, local_cuda=None):
     sys.exit(1)
 
 
+PROGRESS_INTERVAL_MB = 5
+
+
+def _progress_reporter():
+    last_mb = [0.0]
+    def hook(chunks, block_size, total_size):
+        if total_size <= 0:
+            return
+        downloaded = chunks * block_size
+        mb = downloaded / (1024 ** 2)
+        total_mb = total_size / (1024 ** 2)
+        if mb - last_mb[0] >= PROGRESS_INTERVAL_MB or downloaded >= total_size:
+            print(f'  {mb:.1f} / {total_mb:.1f} MB', flush=True)
+            last_mb[0] = mb
+    return hook
+
+
 def download_file(url, dest):
-    print(f'Downloading {os.path.basename(dest)} ...')
-    urllib.request.urlretrieve(url, dest, reporthook=lambda c, bs, ts: print(f'  {c*bs/(1024**2):.1f} MB', end='\r') if ts > 0 else None)
-    print()
+    print(f'Downloading {os.path.basename(dest)} ...', flush=True)
+    urllib.request.urlretrieve(url, dest, reporthook=_progress_reporter())
 
 
 def extract(archive, dest_dir):

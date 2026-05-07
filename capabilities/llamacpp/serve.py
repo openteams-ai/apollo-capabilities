@@ -220,7 +220,7 @@ def start_server(model, backend):
 def main():
     parser = argparse.ArgumentParser(description='Prepare model cache and launch llama.cpp server.')
     parser.add_argument('--model', default=DEFAULT_MODEL)
-    parser.add_argument('--backend', choices=['cpu', 'gpu'], default=os.environ.get('LLAMA_BACKEND', 'cpu'))
+    parser.add_argument('--backend', choices=['cpu', 'gpu'], default=os.environ.get('LLAMA_BACKEND', 'gpu'))
     args = parser.parse_args()
 
     os.environ.setdefault('HF_HOME', HF_HOME)

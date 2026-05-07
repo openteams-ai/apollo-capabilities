@@ -103,7 +103,7 @@ depends-on = ["download-llamacpp"]
 
 [feature.gpu.target.win-64.tasks.serve]
 args = [{ arg = "model", default = "unsloth/gemma-4-E4B-it-GGUF:Q4_K_M" }]
-cmd = """HF_HOME=models PATH="bin:$PATH" python serve.py \
+cmd = """HF_HOME=models PATH="bin;$PATH" python serve.py \
   --model "{{ model }}" \
   --backend gpu"""
 depends-on = ["download-llamacpp"]
