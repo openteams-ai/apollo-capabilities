@@ -70,7 +70,7 @@ initialize = { cmd = "echo 'Initialization complete. Run: pixi run serve'", depe
 # the launch to ./ComfyUI/ rather than trying to pick up a recent install
 # elsewhere. Extra arguments for main.py (e.g. `-- --listen 0.0.0.0`)
 # can be appended on the pixi command line.
-serve = { cmd = "comfy tracking disable && comfy --here launch", depends-on = ["install-comfyui", "download-models"] }
+serve = { cmd = "comfy --skip-prompt --here launch", depends-on = ["install-comfyui", "download-models"] }
 
 # ---------------------------------------------------------------------------
 # Platform-specific `install-comfyui`
@@ -94,10 +94,18 @@ serve = { cmd = "comfy tracking disable && comfy --here launch", depends-on = ["
 #              from the nightly PyPI index)
 # ---------------------------------------------------------------------------
 [target.linux-64.tasks]
-install-comfyui = "comfy tracking disable && (test -d ComfyUI || comfy --skip-prompt --here install --nvidia)"
+install-comfyui = "test -d ComfyUI || comfy --skip-prompt --here install --nvidia"
 
 [target.win-64.tasks]
-install-comfyui = "comfy tracking disable && (if not exist ComfyUI\\ (comfy --skip-prompt --here install --nvidia))"
+install-comfyui = "test -d ComfyUI || comfy --skip-prompt --here install --nvidia"
+
+# Force UTF-8 for all child Python processes (comfy-cli, ComfyUI, pip).
+# When the parent (.go) app captures stdout/stderr as pipes, Python on
+# Windows defaults to the system codepage (cp1252) and crashes on the
+# emoji/box-drawing chars that comfy-cli and ComfyUI emit.
+[target.win-64.activation.env]
+PYTHONIOENCODING = "utf-8"
+PYTHONUTF8 = "1"
 
 [target.osx-arm64.tasks]
-install-comfyui = "comfy tracking disable && (test -d ComfyUI || comfy --skip-prompt --here install --m-series)"
+install-comfyui = "test -d ComfyUI || comfy --skip-prompt --here install --m-series"
