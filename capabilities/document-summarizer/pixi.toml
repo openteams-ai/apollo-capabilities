@@ -33,4 +33,4 @@ environment = "default"
 runs-in = "browser"
 
 [tasks]
-launch = { cmd = "streamlit run app.py --server.headless true --browser.gatherUsageStats false" }
+launch = { cmd = "streamlit run app.py" }
