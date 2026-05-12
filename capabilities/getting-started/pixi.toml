@@ -237,19 +237,29 @@ HTML = """<!doctype html>
 
 <div class="hero">
   <div class="badge">Welcome</div>
-  <h2>Build &amp; run AI-ready capabilities</h2>
-  <p>Collab capabilities are self-contained, reproducible environments that expose tools, models, and apps with a single command.</p>
+  <h2>Build &amp; run Progs and Cogs</h2>
+  <p>Collab capabilities are self-contained, reproducible environments for programs, workflows, agents, and AI workers.</p>
 </div>
 
 <main>
 
   <div class="card">
     <h3>What is a capability?</h3>
-    <p>A capability is a <strong>Nebi</strong>-managed pixi project that packages everything needed to run an AI tool, model, or application. Each capability declares:</p>
+    <p>A capability is a <strong>Nebi</strong>-managed pixi project that packages everything needed to run a reusable tool, workflow, model service, or AI worker. Capabilities come in two kinds:</p>
     <ul>
-      <li>Its <strong>dependencies</strong> — pinned conda/PyPI packages</li>
-      <li>A <strong>launch task</strong> — the single command that starts the app or service</li>
-      <li><strong>Metadata</strong> — name, description, target environments, and how it should run (<span class="inline-code">app</span>, <span class="inline-code">browser</span>, or <span class="inline-code">background</span>)</li>
+      <li><strong>Progs</strong> are Programs: apps, workflows, services, notebooks, and other runnable tools</li>
+      <li><strong>Cogs</strong> are Cognitive Workers: AI-based workers, agents, assistants, and model-backed automations</li>
+      <li>Progs may use one or more Cogs, but they can also run without them</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>What each capability declares</h3>
+    <p>Whether it is a Prog or a Cog, each capability declares the pieces needed to install, discover, and launch it:</p>
+    <ul>
+      <li>Its <strong>dependencies</strong> - pinned conda/PyPI packages</li>
+      <li>A <strong>launch task</strong> - the single command that starts the app, service, or worker</li>
+      <li><strong>Metadata</strong> - name, description, target environments, and how it should run (<span class="inline-code">app</span>, <span class="inline-code">browser</span>, or <span class="inline-code">background</span>)</li>
     </ul>
   </div>
 
@@ -259,15 +269,15 @@ HTML = """<!doctype html>
     <div class="step-num">1</div>
     <div class="step-body">
       <h4>Open the Collab Desktop App</h4>
-      <p>Launch Collab Desktop on your machine. All available capabilities are listed in the capabilities browser.</p>
+      <p>Launch Collab Desktop on your machine. Available Progs and Cogs are listed in the capabilities browser.</p>
     </div>
   </div>
 
   <div class="step">
     <div class="step-num">2</div>
     <div class="step-body">
-      <h4>Select a capability</h4>
-      <p>Click on any capability card to open its detail view, where you can read its description and requirements.</p>
+      <h4>Select a Prog or Cog</h4>
+      <p>Click on any capability card to open its detail view, where you can read its description, requirements, and launch behavior.</p>
     </div>
   </div>
 
@@ -275,7 +285,7 @@ HTML = """<!doctype html>
     <div class="step-num">3</div>
     <div class="step-body">
       <h4>Click Install</h4>
-      <p>Collab resolves and installs all dependencies into an isolated environment, then launches the capability automatically — no terminal needed. It opens in the correct context: app window, browser tab, or background service.</p>
+      <p>Collab resolves and installs all dependencies into an isolated environment, then launches the capability automatically. It opens in the correct context: app window, browser tab, or background service.</p>
     </div>
   </div>
 
@@ -296,7 +306,7 @@ pixi global install nebi</code></pre>
     <div class="step-body">
       <h4>Import the capability</h4>
       <p>Pull the capability directly from the OpenTeams registry into a local directory.</p>
-      <pre><code>nebi import quay.io/openteams_capabilities/hello-world:latest -o ./hello-world</code></pre>
+      <pre><code>nebi import quay.io/openteams_capabilities/getting-started:latest -o ./getting-started</code></pre>
     </div>
   </div>
 
@@ -305,7 +315,7 @@ pixi global install nebi</code></pre>
     <div class="step-body">
       <h4>Launch the capability</h4>
       <p>Navigate into the imported directory and run the launch task with pixi.</p>
-      <pre><code>cd hello-world
+      <pre><code>cd getting-started
 pixi run launch</code></pre>
     </div>
   </div>
@@ -325,7 +335,7 @@ pixi run launch</code></pre>
     <div class="step-num">2</div>
     <div class="step-body">
       <h4>Clone the repository</h4>
-      <p>Clone the Collab capabilities repository to get all capabilities locally.</p>
+      <p>Clone the Collab capabilities repository to get all Progs and Cogs locally.</p>
       <pre><code>git clone https://github.com/openteams-ai/apollo-capabilities.git
 cd apollo-capabilities</code></pre>
     </div>
@@ -336,7 +346,7 @@ cd apollo-capabilities</code></pre>
     <div class="step-body">
       <h4>Navigate to a capability directory</h4>
       <p>Each capability lives in its own folder inside <span class="inline-code">capabilities/</span>.</p>
-      <pre><code>cd capabilities/hello-world</code></pre>
+      <pre><code>cd capabilities/getting-started</code></pre>
     </div>
   </div>
 
@@ -349,14 +359,16 @@ cd apollo-capabilities</code></pre>
     </div>
   </div>
 
-  <div class="steps-heading" style="margin-top: 3rem;">Creating a new capability</div>
+  <div class="steps-heading" style="margin-top: 3rem;">Creating a new Prog or Cog</div>
 
   <div class="step">
     <div class="step-num">1</div>
     <div class="step-body">
-      <h4>Copy an existing capability as a template</h4>
-      <p>The <span class="inline-code">hello-world</span> capability is the simplest starting point. Copy it into a new folder with your capability's name.</p>
-      <pre><code>cp -r capabilities/hello-world capabilities/my-capability</code></pre>
+      <h4>Choose the capability kind</h4>
+      <p>Use a Prog for an app, workflow, service, notebook, or tool. Use a Cog for an AI-based worker, agent, assistant, or cognitive service.</p>
+      <pre><code>mkdir capabilities/my-prog
+    # or
+    mkdir capabilities/my-cog</code></pre>
     </div>
   </div>
 
@@ -364,7 +376,7 @@ cd apollo-capabilities</code></pre>
     <div class="step-num">2</div>
     <div class="step-body">
       <h4>Update the manifest</h4>
-      <p>Edit <span class="inline-code">pixi.toml</span> to set the name, description, dependencies, and launch task for your new capability.</p>
+      <p>Edit <span class="inline-code">pixi.toml</span> to set the name, description, dependencies, launch task, and whether this is intended to behave as a Prog or Cog.</p>
       <pre><code># Edit capabilities/my-capability/pixi.toml</code></pre>
     </div>
   </div>
@@ -373,8 +385,8 @@ cd apollo-capabilities</code></pre>
     <div class="step-num">3</div>
     <div class="step-body">
       <h4>Run it</h4>
-      <p>Pixi installs your dependencies and launches the capability.</p>
-      <pre><code>cd capabilities/my-capability
+      <p>Pixi installs your dependencies and launches the Prog or Cog.</p>
+      <pre><code>cd capabilities/my-prog
 pixi run launch</code></pre>
     </div>
   </div>
