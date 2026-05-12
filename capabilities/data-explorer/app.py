@@ -114,6 +114,10 @@ PROVIDERS: dict[str, Provider] = {
     ),
 }
 
+DEFAULT_CONTEXT_SAMPLE_ROWS = 20
+MAX_CONTEXT_SAMPLE_ROWS = 1000
+MAX_CONTEXT_SAMPLE_CHARS = 120_000
+
 # ---------------------------------------------------------------------------
 # Streamlit UI
 # ---------------------------------------------------------------------------
@@ -126,6 +130,7 @@ ss.setdefault("df", None)
 ss.setdefault("filename", None)
 ss.setdefault("messages", [])  # chat history shown to user
 ss.setdefault("models_for_provider", {})  # provider_key -> list[str]
+ss.setdefault("context_sample_rows", DEFAULT_CONTEXT_SAMPLE_ROWS)
 
 
 SAMPLE_CSV = Path(__file__).parent / "sample_orders.csv"
@@ -168,7 +173,8 @@ with st.expander("Settings", expanded=ss.df is None):
         if provider.needs_api_key:
             st.warning(
                 "⚠ Using a remote provider sends your data (including the CSV "
-                "sample and summary statistics) off this device to a third-party API."
+                f"sample of up to {ss.context_sample_rows:,} rows and summary statistics) "
+                "off this device to a third-party API."
             )
 
         if st.button("Scan for running models", use_container_width=True):
@@ -194,6 +200,14 @@ with st.expander("Settings", expanded=ss.df is None):
 
     with data_col:
         st.markdown("**Data**")
+        st.number_input(
+            "Rows sent to model",
+            min_value=1,
+            max_value=MAX_CONTEXT_SAMPLE_ROWS,
+            step=20,
+            key="context_sample_rows",
+            help="Number of leading CSV rows included in each chat prompt. Large values can slow responses or exceed small model context windows.",
+        )
         upload = st.file_uploader("Upload CSV", type=["csv"], accept_multiple_files=False)
         if upload is not None and upload.name != ss.filename:
             try:
@@ -258,7 +272,15 @@ if prompt:
 
     ss.messages.append({"role": "user", "content": prompt})
 
-    head_sample = df.head(20).to_csv(index=False)
+    sample_rows = min(int(ss.context_sample_rows), len(df))
+    head_sample = df.head(sample_rows).to_csv(index=False)
+    sample_note = ""
+    if len(head_sample) > MAX_CONTEXT_SAMPLE_CHARS:
+        head_sample = head_sample[:MAX_CONTEXT_SAMPLE_CHARS]
+        sample_note = (
+            f"\n(Note: CSV sample truncated to {MAX_CONTEXT_SAMPLE_CHARS:,} characters "
+            "to stay within the model prompt budget.)"
+        )
     try:
         describe = df.describe(include="all").to_csv()
     except Exception as e:
@@ -268,7 +290,7 @@ if prompt:
         "You are a data analyst helping the user understand a pandas DataFrame named `df`. "
         f"It has {len(df):,} rows and {len(df.columns)} columns.\n\n"
         f"Schema:\n{schema_text}\n\n"
-        f"First 20 rows (CSV):\n{head_sample}\n"
+        f"First {sample_rows:,} rows (CSV):\n{head_sample}{sample_note}\n"
         f"Summary statistics (CSV):\n{describe}\n"
         "Answer questions about this data. When useful, show the pandas snippet you would run, "
         "but compute final answers yourself from the sample and stats above. If a question requires "
