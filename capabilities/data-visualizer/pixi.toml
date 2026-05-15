@@ -1,0 +1,37 @@
+[workspace]
+name = "data-visualizer"
+version = "0.1.0"
+description = "Upload a CSV and build interactive charts, or describe visualizations in plain English using a local LLM"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[dependencies]
+python = ">=3.11,<3.13"
+streamlit = ">=1.40,<2"
+pandas = ">=2.2,<3"
+numpy = ">=2.0,<3"
+plotly = ">=5.20,<6"
+requests = ">=2.31,<3"
+openai = ">=1.40,<2"
+
+[tool.nebi.bundle]
+include = ["app.py", "sample_orders.csv", "icon.jpg"]
+
+[tool.nebi.capability]
+spec-version = "0.1.0"
+
+[tool.nebi.capability.openteams.data-visualizer]
+name = "Data Visualizer"
+description = "Upload a CSV and build interactive charts, or describe visualizations in plain English using a local LLM"
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/data-visualizer/icon.jpg"
+author = { name = "OpenTeams", email = "info@openteams.com" }
+tags = ["data", "csv", "pandas", "plotly", "charts", "visualization", "llm", "local"]
+default-target = "local"
+
+[tool.nebi.capability.openteams.data-visualizer.targets.local]
+task = "launch"
+environment = "default"
+runs-in = "browser"
+
+[tasks]
+launch = { cmd = "python run_both.py" }
