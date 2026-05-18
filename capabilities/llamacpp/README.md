@@ -1,6 +1,6 @@
 ## Local LLM Server
 
-A [pixi](https://pixi.sh)-based workflow downloads a precompiled [llama.cpp](https://github.com/ggml-org/llama.cpp) binary, pre-caches the selected model and mmproj GGUFs from HuggingFace with visible terminal status, then launches a local inference server.
+A [pixi](https://pixi.sh)-based workflow downloads a precompiled [llama.cpp](https://github.com/ggml-org/llama.cpp) binary pinned to release [`b9200`](https://github.com/ggml-org/llama.cpp/releases/tag/b9200), pre-caches the selected model and mmproj GGUFs from HuggingFace with visible terminal status, then launches a local inference server.
 
 Requires: `pixi` ([install](https://pixi.sh/latest/#installation))
 
