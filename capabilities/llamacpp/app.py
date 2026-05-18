@@ -168,6 +168,40 @@ def make_executable(dest_dir):
             os.chmod(fp, 0o755)
 
 
+def smoke_test_server():
+    if not os.path.exists(SERVER_BINARY):
+        print(f'ERROR: Smoke test failed: {SERVER_BINARY} missing after extraction.')
+        sys.exit(1)
+    env = os.environ.copy()
+    bin_abs = os.path.abspath(BIN_DIR)
+    if sys.platform == 'win32':
+        env['PATH'] = bin_abs + os.pathsep + env.get('PATH', '')
+    else:
+        env['LD_LIBRARY_PATH'] = bin_abs + os.pathsep + env.get('LD_LIBRARY_PATH', '')
+    print('Smoke-testing llama-server --version ...')
+    try:
+        result = subprocess.run(
+            [SERVER_BINARY, '--version'],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f'ERROR: Smoke test failed to invoke {SERVER_BINARY}: {exc}')
+        sys.exit(1)
+    output = (result.stderr or '') + (result.stdout or '')
+    if result.returncode != 0:
+        print(f'ERROR: {SERVER_BINARY} --version exited with code {result.returncode}.')
+        if output.strip():
+            print(output.strip())
+        sys.exit(1)
+    for line in output.splitlines():
+        line = line.strip()
+        if line:
+            print(f'  {line}')
+
+
 def installed_version_key():
     if not os.path.exists(MARKER) or not os.path.exists(SERVER_BINARY):
         return None
@@ -224,9 +258,6 @@ print(f'Selected: {aname}  (platform={sys.platform}, backend={BACKEND})')
 download_file(asset['browser_download_url'], aname)
 extract(aname, BIN_DIR)
 make_executable(BIN_DIR)
-with open(MARKER, 'w') as f:
-    f.write(version_key)
-print(f'llama.cpp {tag} ({BACKEND}) ready in {BIN_DIR}/')
 if sys.platform == 'win32' and BACKEND == 'gpu':
     crt = pick_cudart(data['assets'], asset)
     if crt:
@@ -236,3 +267,7 @@ if sys.platform == 'win32' and BACKEND == 'gpu':
         with zipfile.ZipFile(cn, 'r') as zf:
             zf.extractall(BIN_DIR)
         os.remove(cn)
+smoke_test_server()
+with open(MARKER, 'w') as f:
+    f.write(version_key)
+print(f'llama.cpp {tag} ({BACKEND}) ready in {BIN_DIR}/')
