@@ -18,7 +18,7 @@ python run_both.py
 
 ### Workflow
 
-1. Upload a CSV in Settings — or click **Load sample data** to load the bundled `sample_orders.csv` (120 rows of synthetic e-commerce orders) for a quick demo.
+1. Upload a CSV in Settings — or click **Load sample data** to load the bundled `raw_companies.csv` for a quick demo.
 2. Use the **Chart Builder** tab to instantly create charts by picking a chart type, axes, aggregation, and grouping.
 3. Use the **AI Chart** tab to describe a visualization in plain English — the LLM generates and runs Plotly code, and shows you the result alongside the code it wrote.
 4. Use the **Data** tab to inspect the raw table and column schema.
