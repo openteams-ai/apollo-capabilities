@@ -20,6 +20,7 @@ BIN_DIR = 'bin'
 MARKER = os.path.join(BIN_DIR, '.llamacpp_version')
 SERVER_BINARY = os.path.join(BIN_DIR, 'llama-server.exe' if sys.platform == 'win32' else 'llama-server')
 BACKEND = os.environ.get('LLAMA_BACKEND', 'cpu')
+LLAMACPP_RELEASE_TAG = 'b9200'
 
 
 def parse_cuda_ver(name):
@@ -178,9 +179,9 @@ def installed_version_key():
 
 
 def release_metadata():
-    print('Checking latest llama.cpp release...')
+    print(f'Fetching pinned llama.cpp release {LLAMACPP_RELEASE_TAG}...')
     req = urllib.request.Request(
-        'https://api.github.com/repos/ggml-org/llama.cpp/releases/latest',
+        f'https://api.github.com/repos/ggml-org/llama.cpp/releases/tags/{LLAMACPP_RELEASE_TAG}',
         headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'apollo-desktop'},
     )
     return json.loads(urllib.request.urlopen(req, timeout=10).read())
@@ -195,7 +196,7 @@ except (TimeoutError, urllib.error.URLError) as exc:
     version_key = installed_version_key()
     if version_key:
         version = version_key.rsplit('-', 1)[0]
-        print(f'WARNING: Could not check latest llama.cpp release: {exc}')
+        print(f'WARNING: Could not fetch llama.cpp release {LLAMACPP_RELEASE_TAG}: {exc}')
         print(f'Using cached llama.cpp {version} ({BACKEND}) from {BIN_DIR}/.')
         sys.exit(0)
     print(f'ERROR: Could not download llama.cpp release metadata: {exc}')
