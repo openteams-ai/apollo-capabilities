@@ -11,10 +11,6 @@ pixi run launch
 
 Streamlit listens on `http://localhost:8501` by default.
 
-To start both the Data Visualizer and the companion `llamacpp` server simultaneously:
-```bash
-python run_both.py
-```
 
 ### Workflow
 
