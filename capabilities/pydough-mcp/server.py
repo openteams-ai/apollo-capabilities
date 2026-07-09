@@ -34,4 +34,7 @@ server.settings.port = port
 # pydantic-ai MCPServerSSE connects to http://<host>:<port>/sse
 print(f"[pydough-mcp] starting SSE server — connect at http://{host}:{port}/sse", flush=True)
 
-server.run(transport="sse")
+try:
+    server.run(transport="sse")
+except KeyboardInterrupt:
+    print("[pydough-mcp] stopped", flush=True)

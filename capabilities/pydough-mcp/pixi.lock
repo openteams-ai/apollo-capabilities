@@ -1,9 +1,25 @@
 version: 7
 platforms:
 - name: linux-64
+  virtual-packages:
+  - __unix=0=0
+  - __linux=4.18
+  - __glibc=2.28
+  - __archspec=0=x86_64
 - name: osx-64
+  virtual-packages:
+  - __unix=0=0
+  - __osx=13.0
+  - __archspec=0=x86_64
 - name: osx-arm64
+  virtual-packages:
+  - __unix=0=0
+  - __osx=13.0
+  - __archspec=0=m1
 - name: win-64
+  virtual-packages:
+  - __win=10.0
+  - __archspec=0=x86_64
 environments:
   default:
     channels:
@@ -35,7 +51,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.6.17-hbd8a1cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.13-8_cp313.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025c-hc9c84f9_1.conda
-      - pypi: git+https://github.com/Vaidehi2510/pydough-ce.git?subdirectory=pydough-analytics&rev=9132421afc30286cad226810ab812aebe621337a#9132421afc30286cad226810ab812aebe621337a
+      - pypi: git+https://github.com/yagaC64/pydough-ce.git?subdirectory=pydough-analytics&rev=b826c3bd54e0ef5ab83aba47fa574087d6448735#b826c3bd54e0ef5ab83aba47fa574087d6448735
       - pypi: https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/05/7f/798705f5296a58ca505d600456748d1be48078eac8a7050d8a98bc9edb89/decorator-5.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/07/6c/aa3f2f849e01cb6a001cd8554a88d4c77c5c1a31c95bdf1cf9301e6d9ef4/defusedxml-0.7.1-py2.py3-none-any.whl
@@ -193,7 +209,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/python-3.13.14-h3d5d122_100_cp313.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/readline-8.3-h68b038d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tk-8.6.13-h7142dee_3.conda
-      - pypi: git+https://github.com/Vaidehi2510/pydough-ce.git?subdirectory=pydough-analytics&rev=9132421afc30286cad226810ab812aebe621337a#9132421afc30286cad226810ab812aebe621337a
+      - pypi: git+https://github.com/yagaC64/pydough-ce.git?subdirectory=pydough-analytics&rev=b826c3bd54e0ef5ab83aba47fa574087d6448735#b826c3bd54e0ef5ab83aba47fa574087d6448735
       - pypi: https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/05/7f/798705f5296a58ca505d600456748d1be48078eac8a7050d8a98bc9edb89/decorator-5.3.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/07/6c/aa3f2f849e01cb6a001cd8554a88d4c77c5c1a31c95bdf1cf9301e6d9ef4/defusedxml-0.7.1-py2.py3-none-any.whl
@@ -352,7 +368,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/python-3.13.14-h448ec07_100_cp313.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/readline-8.3-h46df422_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-h010d191_3.conda
-      - pypi: git+https://github.com/Vaidehi2510/pydough-ce.git?subdirectory=pydough-analytics&rev=9132421afc30286cad226810ab812aebe621337a#9132421afc30286cad226810ab812aebe621337a
+      - pypi: git+https://github.com/yagaC64/pydough-ce.git?subdirectory=pydough-analytics&rev=b826c3bd54e0ef5ab83aba47fa574087d6448735#b826c3bd54e0ef5ab83aba47fa574087d6448735
       - pypi: https://files.pythonhosted.org/packages/02/dc/c7043cab6fed8ae159fc1923ce829ada35c4dbd797d408a43858ffaf9639/tornado-6.5.7-cp39-abi3-macosx_10_9_universal2.whl
       - pypi: https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/05/7f/798705f5296a58ca505d600456748d1be48078eac8a7050d8a98bc9edb89/decorator-5.3.1-py3-none-any.whl
@@ -511,7 +527,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/vc-14.5-h1b7c187_39.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/vc14_runtime-14.51.36231-h1b9f54f_39.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/vcomp14-14.51.36231-h1b9f54f_39.conda
-      - pypi: git+https://github.com/Vaidehi2510/pydough-ce.git?subdirectory=pydough-analytics&rev=9132421afc30286cad226810ab812aebe621337a#9132421afc30286cad226810ab812aebe621337a
+      - pypi: git+https://github.com/yagaC64/pydough-ce.git?subdirectory=pydough-analytics&rev=b826c3bd54e0ef5ab83aba47fa574087d6448735#b826c3bd54e0ef5ab83aba47fa574087d6448735
       - pypi: https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/05/73/c4abe620b841b6b791f2edc248f556900667a5a1cf023a6646967ae98335/markupsafe-3.0.3-cp313-cp313-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/05/7f/798705f5296a58ca505d600456748d1be48078eac8a7050d8a98bc9edb89/decorator-5.3.1-py3-none-any.whl
@@ -1597,7 +1613,7 @@ packages:
     - vcomp14 >=14.51.36231
   size: 120684
   timestamp: 1781320948530
-- pypi: git+https://github.com/Vaidehi2510/pydough-ce.git?subdirectory=pydough-analytics&rev=9132421afc30286cad226810ab812aebe621337a#9132421afc30286cad226810ab812aebe621337a
+- pypi: git+https://github.com/yagaC64/pydough-ce.git?subdirectory=pydough-analytics&rev=b826c3bd54e0ef5ab83aba47fa574087d6448735#b826c3bd54e0ef5ab83aba47fa574087d6448735
   name: pydough-analytics
   version: 0.1.7
   requires_dist:

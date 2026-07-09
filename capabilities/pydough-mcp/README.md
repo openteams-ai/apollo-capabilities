@@ -22,9 +22,9 @@ The server binds to `http://127.0.0.1:8765/sse` by default.
 ### How it works
 
 1. A Collab hub agent receives a data question from the user.
-2. The agent calls `open_session_impl` with the database URL, metadata path, db name, and graph name.
-3. The agent calls `ask_impl` — the MCP server uses the configured LLM to generate a PyDough expression, compiles it to SQL, and executes it.
-4. The agent calls `close_session_impl` and reports the rows, SQL, and any errors.
+2. The agent calls `open_session` with the database URL, metadata path, db name, and graph name.
+3. The agent calls `ask` — the MCP server uses the configured LLM to generate a PyDough expression, compiles it to SQL, and executes it.
+4. The agent calls `close_session` and reports the rows, SQL, and any errors.
 
 ### Companion
 
