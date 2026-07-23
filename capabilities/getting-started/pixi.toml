@@ -21,6 +21,7 @@ icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["docs", "onboarding"]
 default-target = "local"
+catalog = { status = "retired" }
 
 [tool.nebi.capability.openteams.getting-started.targets.local]
 task = "launch"

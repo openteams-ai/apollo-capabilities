@@ -112,6 +112,16 @@
       "additionalProperties": false,
       "minProperties": 1
     },
+    "catalog": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["active", "retired"]
+        }
+      },
+      "additionalProperties": false
+    },
     "capabilityDefinition": {
       "type": "object",
       "required": ["name", "description", "default-target", "targets"],
@@ -128,7 +138,8 @@
           "type": "string",
           "enum": ["local", "hub"]
         },
-        "targets": { "$ref": "#/$defs/targets" }
+        "targets": { "$ref": "#/$defs/targets" },
+        "catalog": { "$ref": "#/$defs/catalog" }
       },
       "additionalProperties": false,
       "allOf": [

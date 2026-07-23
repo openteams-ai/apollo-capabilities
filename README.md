@@ -50,6 +50,12 @@ Then run it:
 pixi run launch
 ```
 
+The current discovery index is published at
+[`https://openteams-ai.github.io/apollo-capabilities/catalog.json`](https://openteams-ai.github.io/apollo-capabilities/catalog.json).
+It is generated from each manifest's catalog lifecycle metadata. Retired
+capabilities remain importable by repository reference for older clients but
+are omitted from the current index.
+
 ### Local usage
 
 Clone this repository, navigate into any capability directory, and run its tasks with pixi:

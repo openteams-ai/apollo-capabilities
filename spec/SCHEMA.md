@@ -35,6 +35,7 @@ icon = "<URL>" # optional
 author = { name = "<Name>", email = "<email>" } # optional
 tags = ["tag1", "tag2"] # optional
 default-target = "local"
+catalog = { status = "active" } # optional; defaults to active
 
 [tool.nebi.capability.<org-name>.<capability-key>.targets.local]
 task = "launch"
@@ -69,6 +70,7 @@ launch-hub = { cmd = "<command>" } # optional, only if hub differs
 | `author` | No | Author metadata (`name`, `email`). |
 | `tags` | No | Discovery/marketplace tags. |
 | `default-target` | Yes | Default execution target. Must match a key under `targets`. Valid target values are currently `local` and `hub`. |
+| `catalog` | No | Catalog lifecycle metadata. `status` is `active` by default; `retired` preserves the published artifact but removes it from current discovery. |
 
 ## `[tool.nebi.capability.<org-name>.<capability-key>.targets.<target>]`
 

@@ -5,6 +5,8 @@ on:
     paths:
       - "capabilities/**/pixi.toml"
       - "spec/capability.schema.json"
+      - "scripts/generate_catalog.py"
+      - "scripts/test_generate_catalog.py"
 
 jobs:
   validate:
@@ -57,3 +59,9 @@ jobs:
 
           print(f"\nAll {len(manifests)} capability manifest(s) are valid.")
           EOF
+
+      - name: Test catalog generation
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+
+      - name: Generate catalog
+        run: python scripts/generate_catalog.py --output /tmp/catalog.json
