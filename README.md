@@ -51,10 +51,14 @@ pixi run launch
 ```
 
 The current discovery index is published at
-[`https://openteams-ai.github.io/apollo-capabilities/catalog.json`](https://openteams-ai.github.io/apollo-capabilities/catalog.json).
+[`https://openteams-ai.github.io/apollo-capabilities/catalog.v1.json`](https://openteams-ai.github.io/apollo-capabilities/catalog.v1.json).
 It is generated from each manifest's catalog lifecycle metadata. Retired
 capabilities remain importable by repository reference for older clients but
 are omitted from the current index.
+
+Catalog URLs are versioned so released clients remain pinned to a compatible
+schema. A future schema version must be published at a new path and coexist
+with earlier versions during their support window.
 
 ### Local usage
 
