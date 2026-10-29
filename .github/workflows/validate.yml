@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - "capabilities/**/pixi.toml"
+      - "capabilities/**/pixi.lock"
       - "spec/capability.schema.json"
+      - ".github/workflows/validate.yml"
       - "scripts/generate_catalog.py"
       - "scripts/test_generate_catalog.py"
 
@@ -16,12 +18,16 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.11"
 
       - name: Install jsonschema
-        run: pip install jsonschema==4.*
+        # pip verifies PyPI with its own vendored certifi; 26.2.2 is the first
+        # release that distrusts the compromised eMudhra intermediates.
+        run: |
+          python -m pip install --upgrade "pip>=26.2.2"
+          python -m pip install "jsonschema==4.*"
 
       - name: Validate capabilities
         run: |
@@ -65,3 +71,26 @@ jobs:
 
       - name: Generate catalog
         run: python scripts/generate_catalog.py --output /tmp/catalog.json
+
+  lock-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up pixi
+        uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
+        with:
+          pixi-version: v0.82.1
+          run-install: false
+
+      # Fails when a lockfile no longer matches its manifest, so a manifest
+      # edit cannot land without a re-lock, and proves the pinned Pixi (the
+      # version every capability's requires-pixi names) reads every lock.
+      - name: Lockfiles match manifests
+        run: |
+          set -euo pipefail
+          for manifest in capabilities/*/pixi.toml; do
+            echo "==> ${manifest}"
+            pixi lock --check --manifest-path "${manifest}"
+          done

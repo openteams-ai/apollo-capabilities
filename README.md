@@ -38,7 +38,11 @@ Cogs will appear in the same catalog as agent-style AI workers that can be launc
 
 ### From the OCI registry (recommended)
 
-Capabilities are published to `quay.io/openteams_capabilities`. Import one directly with [Nebi](https://nebi.nebari.dev):
+Capabilities are published to `quay.io/openteams_capabilities`. Import one directly with [Nebi](https://nebi.nebari.dev).
+Use Nebi 0.16 or later and Pixi 0.82.1 or later (the current releases of both qualify): earlier releases
+still trust the intermediate certificates compromised in the
+[October 2026 eMudhra incident](https://emudhra.we-have-a-problem.com/), and every capability manifest
+declares `requires-pixi = ">=0.82.1"`, so an older Pixi refuses to install them.
 
 ```sh
 nebi import quay.io/openteams_capabilities/getting-started:latest
@@ -62,7 +66,7 @@ with earlier versions during their support window.
 
 ### Local usage
 
-Clone this repository, navigate into any capability directory, and run its tasks with pixi:
+Clone this repository, navigate into any capability directory, and run its tasks with pixi (0.82.1 or later, see above):
 
 ```sh
 cd capabilities/getting-started

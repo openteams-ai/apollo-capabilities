@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "A welcome and getting started guide for Collab capabilities"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+requires-pixi = ">=0.82.1"
 
 [dependencies]
 python = ">=3.11"
@@ -296,9 +297,9 @@ HTML = """<!doctype html>
     <div class="step-num">1</div>
     <div class="step-body">
       <h4>Install Nebi</h4>
-      <p>Nebi builds on pixi to add environment versioning, sharing, and team governance. Install pixi first, then install Nebi.</p>
+      <p>Nebi builds on pixi to add environment versioning, sharing, and team governance. Install pixi first, then install Nebi. The installers below fetch the latest releases; capabilities require pixi 0.82.1 or later and Nebi 0.16 or later, because earlier releases still trust certificates compromised in October 2026.</p>
       <pre><code>curl -fsSL https://pixi.sh/install.sh | sh
-pixi global install nebi</code></pre>
+pixi global install "nebi>=0.16"</code></pre>
     </div>
   </div>
 
@@ -327,7 +328,7 @@ pixi run launch</code></pre>
     <div class="step-num">1</div>
     <div class="step-body">
       <h4>Install pixi</h4>
-      <p>Pixi is the package manager that powers every capability. Install it once on your machine.</p>
+      <p>Pixi is the package manager that powers every capability. Install it once on your machine. The installer fetches the latest release; capabilities require 0.82.1 or later.</p>
       <pre><code>curl -fsSL https://pixi.sh/install.sh | sh</code></pre>
     </div>
   </div>

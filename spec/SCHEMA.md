@@ -24,6 +24,7 @@ name = "<capability-name>"
 version = "0.1.0"
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+requires-pixi = ">=0.82.1" # minimum Pixi whose root store no longer trusts the compromised eMudhra CAs
 
 [tool.nebi.capability]
 spec-version = "0.1.0"
@@ -53,6 +54,14 @@ launch-hub = { cmd = "<command>" } # optional, only if hub differs
 ```
 
 ## Field reference
+
+## `[workspace]`
+
+The `[workspace]` table is Pixi's own and is not part of the capability metadata, but one field is required by convention in this repository:
+
+| Field | Required | Description |
+|---|---|---|
+| `requires-pixi` | Yes (in this repository) | Minimum Pixi version allowed to resolve or install the capability, as a Pixi version spec. Pixi refuses to run when its own version does not satisfy it. Keep it at or above `">=0.82.1"`: earlier Pixi releases verify downloads with an embedded root store that still trusts the intermediate certificates compromised in the October 2026 eMudhra incident. Consumers that read `[workspace]` (Collab, the Hub, Nebi) ignore the key. |
 
 ## `[tool.nebi.capability]`
 

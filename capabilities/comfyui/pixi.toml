@@ -3,6 +3,7 @@ authors = ["dillonroach <dillon.roach@gmail.com>"]
 channels = ["conda-forge"]
 name = "comfyui"
 platforms = ["linux-64", "osx-arm64", "win-64"]
+requires-pixi = ">=0.82.1"
 version = "0.16.4"
 
 [tool.nebi.bundle]

@@ -5,6 +5,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  # Nebi 0.16 is the first release whose Go root store no longer trusts
+  # the compromised eMudhra intermediates (nebari-dev/nebi#620). Keep the
+  # checksum in step with the version: it is the linux_x86_64 line of
+  # the release's checksums.txt.
+  NEBI_VERSION: "0.16"
+  NEBI_SHA256: "f23f55f3ab7f58d7c6a9b94d3db836406320f4763d91aecffc330f83967b4567"
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -13,31 +21,50 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Download nebi
-        env:
-          NEBI_VERSION: "0.10.4"
         run: |
-          curl -sL "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/nebi_${NEBI_VERSION}_linux_x86_64.tar.gz" \
-            | tar xz -C /usr/local/bin nebi
+          set -euo pipefail
+          asset="nebi_${NEBI_VERSION}_linux_x86_64.tar.gz"
+          curl -fsSL -o "$asset" "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/${asset}"
+          echo "${NEBI_SHA256}  ${asset}" | sha256sum -c -
+          tar xzf "$asset" -C /usr/local/bin nebi
+          rm -f "$asset"
           nebi version
+
+      - name: Generate ephemeral nebi JWT secret
+        # Nebi 0.16 refuses to start in team mode with a JWT secret shorter
+        # than 32 characters or equal to its shipped default. The secret only
+        # has to outlive this job, so a fresh random one is generated per run.
+        run: |
+          set -euo pipefail
+          secret="$(openssl rand -hex 32)"
+          echo "::add-mask::${secret}"
+          echo "NEBI_AUTH_JWT_SECRET=${secret}" >> "$GITHUB_ENV"
 
       - name: Start nebi server
         env:
           NEBI_DATABASE_DRIVER: sqlite
           NEBI_DATABASE_DSN: /tmp/nebi.db
           NEBI_QUEUE_TYPE: memory
-          NEBI_AUTH_JWT_SECRET: ci-ephemeral-secret
           ADMIN_USERNAME: admin
           ADMIN_PASSWORD: admin
         run: |
+          set -euo pipefail
           nebi serve &
-          # Wait for server to be ready
+          # Wait for server to be ready; fail the step if it never is, so a
+          # server that exits at startup is reported here, not at login.
+          ready=0
           for i in $(seq 1 30); do
             if curl -sf http://localhost:8460/api/v1/health > /dev/null 2>&1; then
               echo "Server is ready"
+              ready=1
               break
             fi
             sleep 1
           done
+          if [ "${ready}" -ne 1 ]; then
+            echo "::error::nebi server did not become ready within 30s"
+            exit 1
+          fi
 
       - name: Login to nebi
         run: |
@@ -109,11 +136,13 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Download nebi
-        env:
-          NEBI_VERSION: "0.10.4"
         run: |
-          curl -sL "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/nebi_${NEBI_VERSION}_linux_x86_64.tar.gz" \
-            | tar xz -C /usr/local/bin nebi
+          set -euo pipefail
+          asset="nebi_${NEBI_VERSION}_linux_x86_64.tar.gz"
+          curl -fsSL -o "$asset" "https://github.com/nebari-dev/nebi/releases/download/v${NEBI_VERSION}/${asset}"
+          echo "${NEBI_SHA256}  ${asset}" | sha256sum -c -
+          tar xzf "$asset" -C /usr/local/bin nebi
+          rm -f "$asset"
           nebi version
 
       - name: Import capabilities from registry
