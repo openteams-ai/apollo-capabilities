@@ -1,0 +1,39 @@
+[workspace]
+name = "pydough-mcp"
+version = "0.1.0"
+description = "PyDough analytics MCP server — exposes SQL-generation tools over SSE for Collab hub agents"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+
+[dependencies]
+# Python 3.13: PyDough's supported version. Kept separate from ravnar's env
+# so the two resolvers never share constraints.
+python = ">=3.13,<3.14"
+
+[pypi-dependencies]
+pydough-analytics = { git = "https://github.com/Vaidehi2510/pydough-ce.git", rev = "9132421afc30286cad226810ab812aebe621337a", subdirectory = "pydough-analytics", extras = ["mcp"] }
+# aisuite routes provider='openai' calls through the openai package; required
+# at runtime since aisuite does not bundle provider SDKs.
+openai = ">=2.0,<3"
+
+[tool.nebi.bundle]
+include = ["server.py"]
+
+[tool.nebi.capability]
+spec-version = "0.1.0"
+
+[tool.nebi.capability.openteams.pydough-mcp]
+name = "PyDough MCP"
+description = "Runs a local MCP server that translates natural-language data questions into PyDough/SQL queries and executes them against a connected database."
+icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/pydough-mcp/icon.jpg"
+author = { name = "OpenTeams", email = "info@openteams.com" }
+tags = ["analytics", "sql", "mcp", "pydough", "background"]
+default-target = "local"
+
+[tool.nebi.capability.openteams.pydough-mcp.targets.local]
+task = "launch"
+environment = "default"
+runs-in = "background"
+
+[tasks]
+launch = { cmd = "python server.py" }
