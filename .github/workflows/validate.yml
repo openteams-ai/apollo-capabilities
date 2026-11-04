@@ -7,8 +7,19 @@ on:
       - "capabilities/**/pixi.lock"
       - "spec/capability.schema.json"
       - ".github/workflows/validate.yml"
+      - "scripts/check_security_floors.py"
       - "scripts/generate_catalog.py"
+      - "scripts/test_check_security_floors.py"
       - "scripts/test_generate_catalog.py"
+  # Also check main itself, so a merge that skipped or outran the PR checks
+  # (a stale green run, or a PR whose paths did not trigger them) shows up red.
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Both jobs only read the checkout, so the token needs no write access.
+permissions:
+  contents: read
 
 jobs:
   validate:
@@ -66,8 +77,14 @@ jobs:
           print(f"\nAll {len(manifests)} capability manifest(s) are valid.")
           EOF
 
-      - name: Test catalog generation
+      - name: Test scripts
         run: python -m unittest discover -s scripts -p 'test_*.py'
+
+      # Fails when a lock pins a trust store, Python or Rust TLS tool older
+      # than the first release that rejects the compromised eMudhra keys, or
+      # when a manifest's requires-pixi allows a Pixi that predates the fix.
+      - name: Check security floors
+        run: python scripts/check_security_floors.py
 
       - name: Generate catalog
         run: python scripts/generate_catalog.py --output /tmp/catalog.json
