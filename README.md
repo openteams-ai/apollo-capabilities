@@ -81,7 +81,15 @@ pixi run launch
 4. Optionally add a `README.md` documenting tasks, environment variables, and any Prog/Cog relationships.
 5. Generate `pixi.lock` with Pixi 0.82.1 or later and make sure `python scripts/check_security_floors.py` passes.
 
-CI runs that check on every pull request that changes a capability's `pixi.toml` or `pixi.lock`, and on every push to `main`. It fails when a lock pins a root bundle (`ca-certificates`, `certifi`), Python, or a tool that ships its own roots or certificate verifier (`pip`, `uv`, `hf-xet`) older than the first release that rejects the keys compromised in the [October 2026 eMudhra incident](https://emudhra.we-have-a-problem.com/), or when `requires-pixi` allows an older Pixi. When it flags a package, re-lock that package with `pixi update --manifest-path capabilities/<name>/pixi.toml <package>`. The floors and the reasons for them are listed at the top of the script.
+CI runs that check on every pull request that changes a capability's `pixi.toml` or `pixi.lock`, on every push to `main`, and before every publish, which it blocks. It fails when a lock pins any of these older than the first release that rejects the keys compromised in the [October 2026 eMudhra incident](https://emudhra.we-have-a-problem.com/):
+
+- the root bundles `ca-certificates` and `certifi`;
+- Python;
+- `pip`, `uv` and `hf-xet`, which ship their own roots or certificate verifier.
+
+It also fails when `requires-pixi` allows an older Pixi. When it flags a package, re-lock that package with `pixi update --manifest-path capabilities/<name>/pixi.toml <package>`.
+
+A few affected packages have no fixed release a capability can use yet: polars 1.x and conda-forge's Windows `git`. The check reports these as warnings instead of failures, and each capability that uses one documents it as a known issue in its README. The floors, the warnings, and the reasons for them are listed at the top of the script.
 
 ## Specification
 

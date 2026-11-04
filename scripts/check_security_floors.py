@@ -7,11 +7,16 @@ compromised in the October 2026 eMudhra incident
 makes a newer release the minimum safe one, and lower none of them without a
 documented reason. Re-lock a capability that fails with
 ``pixi update --manifest-path capabilities/<name>/pixi.toml <package>``.
+
+Packages that are affected but have no fixed release a capability can use yet
+are reported as warnings instead, so they stay visible without blocking CI.
 """
 
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
+import os
 from pathlib import Path
 import re
 import sys
@@ -28,9 +33,6 @@ PACKAGE_FLOORS: dict[str, str] = {
     # containing the compromised keys, cross-signs included.
     "uv": "0.13.5",
     "hf-xet": "1.7.1",
-    # conda-forge's win-64 git repackages Git for Windows, fixed in
-    # v2.56.0.windows.3, but no conda-forge build of a fixed release exists
-    # yet. Add a floor here once one does.
 }
 
 # CPython's ssl module denies the compromised keys (gh-160040,
@@ -45,15 +47,41 @@ PYTHON_FLOORS: dict[tuple[int, int], str] = {
 }
 PYTHON_PACKAGES = frozenset({"python", "cpython"})
 
+# Affected packages a capability cannot move to a fixed release yet. Each is
+# documented as a known issue in the README of the capability that uses it.
+# polars below 2.1.0 ships rustls-webpki older than 0.103.16, and no 1.x
+# release is fixed (see capabilities/jupyterlab/README.md).
+POLARS_FIX = "2.1.0"
+POLARS_PACKAGES = frozenset(
+    {"polars", "polars-runtime-32", "polars-runtime-64", "polars-runtime-compat"}
+)
+# conda-forge's win-64 git repackages Git for Windows, which fixed its bundled
+# CA file in v2.56.0.windows.3, but no conda-forge build of a fixed release
+# exists yet (see capabilities/comfyui/README.md). Once one does, add "git" to
+# PACKAGE_FLOORS and drop this warning.
+WINDOWS_GIT_SUBDIR = "/win-64/"
+
 # Pixi 0.82.1 is the first release whose embedded root store and verifier
 # reject the compromised keys; see spec/SCHEMA.md.
 PIXI_FLOOR = "0.82.1"
 
-LOCK_PACKAGE_RE = re.compile(r"^\s*-\s+(conda|pypi):\s+(\S+)\s*$", re.MULTILINE)
+# Pixi writes one entry per package to the top-level `packages:` list, at
+# column 0. PyPI entries also record `name:` and `version:` fields; conda
+# entries carry both in their filename only.
+ENTRY_RE = re.compile(r"^- (conda|pypi):\s*(.+?)\s*$")
+FIELD_RE = re.compile(r"^  (name|version):\s*(.+?)\s*$")
 CONDA_SUFFIXES = (".conda", ".tar.bz2")
 SDIST_SUFFIXES = (".tar.gz", ".zip")
 LOWER_BOUND_RE = re.compile(r">=\s*([0-9][0-9A-Za-z.]*)")
 PRERELEASE_RE = re.compile(r"[.\-_]?(a|b|c|rc|alpha|beta|pre|preview|dev)\d*", re.I)
+
+
+@dataclass
+class LockEntry:
+    kind: str
+    url: str
+    name: str | None = None
+    version: str | None = None
 
 
 def release_parts(version: str) -> tuple[int, ...]:
@@ -78,11 +106,15 @@ def normalize_name(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
+def unquote(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+        return value[1:-1]
+    return value
+
+
 def parse_package_url(kind: str, url: str) -> tuple[str, str] | None:
-    """Return (name, version) from a lock entry URL, or None if it has none."""
-    if kind == "pypi" and not url.startswith(("https://", "http://")):
-        return None  # git+, path and editable sources carry no version.
-    filename = url.rstrip("/").rsplit("/", 1)[-1]
+    """Return (name, version) from a lock entry's filename, or None."""
+    filename = url.split("#", 1)[0].split("?", 1)[0].rstrip("/").rsplit("/", 1)[-1]
 
     if kind == "conda":
         for suffix in CONDA_SUFFIXES:
@@ -105,18 +137,26 @@ def parse_package_url(kind: str, url: str) -> tuple[str, str] | None:
     return None
 
 
-def lock_packages(lock_text: str) -> tuple[set[tuple[str, str]], list[str]]:
-    """Return the (name, version) pairs in a lock, plus the URLs of any
-    downloadable entries whose name and version could not be read."""
-    packages = set()
-    unreadable = []
-    for kind, url in LOCK_PACKAGE_RE.findall(lock_text):
-        parsed = parse_package_url(kind, url)
-        if parsed:
-            packages.add(parsed)
-        elif url.startswith(("https://", "http://")):
-            unreadable.append(url)
-    return packages, unreadable
+def lock_entries(lock_text: str) -> list[LockEntry]:
+    """Return the entries of a lock's top-level `packages:` list."""
+    entries: list[LockEntry] = []
+    current: LockEntry | None = None
+    for line in lock_text.splitlines():
+        if match := ENTRY_RE.match(line):
+            current = LockEntry(match.group(1), unquote(match.group(2)))
+            entries.append(current)
+        elif current is not None and line.startswith("  "):
+            if field := FIELD_RE.match(line):
+                setattr(current, field.group(1), unquote(field.group(2)))
+        else:
+            current = None
+    return entries
+
+
+def entry_name_version(entry: LockEntry) -> tuple[str, str] | None:
+    if entry.name and entry.version:
+        return normalize_name(entry.name), entry.version
+    return parse_package_url(entry.kind, entry.url)
 
 
 def package_violation(name: str, version: str) -> str | None:
@@ -140,16 +180,50 @@ def package_violation(name: str, version: str) -> str | None:
     return None
 
 
+def package_warning(name: str, version: str, url: str) -> str | None:
+    if name in POLARS_PACKAGES and version_key(version) < version_key(POLARS_FIX):
+        return (
+            f"{name} {version} < {POLARS_FIX}: known issue, no fixed release "
+            "this capability can use yet"
+        )
+    if name == "git" and WINDOWS_GIT_SUBDIR in url:
+        return (
+            f"git {version} (win-64): known issue, no conda-forge build of a "
+            "fixed Git for Windows yet"
+        )
+    return None
+
+
+def lock_findings(lock_text: str) -> tuple[list[str], list[str]]:
+    """Return the (violations, warnings) for one lock."""
+    entries = lock_entries(lock_text)
+    if not entries:
+        return ["no packages found in pixi.lock"], []
+    violations: set[str] = set()
+    warnings: set[str] = set()
+    for entry in entries:
+        parsed = entry_name_version(entry)
+        if parsed is None:
+            # Fail closed: an entry that cannot be read could be a floor package.
+            violations.add(f"cannot read the package name and version of {entry.url}")
+            continue
+        name, version = parsed
+        try:
+            if violation := package_violation(name, version):
+                violations.add(violation)
+            if warning := package_warning(name, version, entry.url):
+                warnings.add(warning)
+        except ValueError:
+            violations.add(f"cannot parse the version {version!r} of {name}")
+    return sorted(violations), sorted(warnings)
+
+
 def lock_violations(lock_text: str) -> list[str]:
-    packages, unreadable = lock_packages(lock_text)
-    violations = {
-        violation
-        for name, version in packages
-        if (violation := package_violation(name, version))
-    }
-    # Fail closed: an entry the parser cannot read could be a floor package.
-    violations.update(f"cannot read the package version of {url}" for url in unreadable)
-    return sorted(violations)
+    return lock_findings(lock_text)[0]
+
+
+def lock_warnings(lock_text: str) -> list[str]:
+    return lock_findings(lock_text)[1]
 
 
 def manifest_violations(manifest_text: str) -> list[str]:
@@ -171,16 +245,19 @@ def manifest_violations(manifest_text: str) -> list[str]:
     return []
 
 
-def capability_violations(capability_dir: Path) -> list[str]:
-    violations = []
+def capability_findings(capability_dir: Path) -> tuple[list[str], list[str]]:
+    """Return the (violations, warnings) for one capability directory."""
     manifest = capability_dir / "pixi.toml"
     lock = capability_dir / "pixi.lock"
-    violations.extend(manifest_violations(manifest.read_text(encoding="utf-8")))
-    if lock.is_file():
-        violations.extend(lock_violations(lock.read_text(encoding="utf-8")))
-    else:
-        violations.append("pixi.lock is missing")
-    return violations
+    violations = manifest_violations(manifest.read_text(encoding="utf-8"))
+    if not lock.is_file():
+        return [*violations, "pixi.lock is missing"], []
+    lock_violations_, warnings = lock_findings(lock.read_text(encoding="utf-8"))
+    return [*violations, *lock_violations_], warnings
+
+
+def capability_violations(capability_dir: Path) -> list[str]:
+    return capability_findings(capability_dir)[0]
 
 
 def main() -> int:
@@ -194,19 +271,27 @@ def main() -> int:
         path.parent for path in args.capabilities.glob("*/pixi.toml")
     )
     if not capability_dirs:
-        print(f"No capabilities found under {args.capabilities}.")
-        return 0
+        # Fail closed: a moved or mistyped directory must not pass unchecked.
+        print(f"No capabilities found under {args.capabilities}; nothing checked.")
+        return 1
 
+    in_actions = os.environ.get("GITHUB_ACTIONS") == "true"
     failed = False
     for capability_dir in capability_dirs:
-        violations = capability_violations(capability_dir)
-        if violations:
-            failed = True
-            print(f"{capability_dir.name}: FAILED")
-            for violation in violations:
-                print(f"  - {violation}")
-        else:
-            print(f"{capability_dir.name}: OK")
+        violations, warnings = capability_findings(capability_dir)
+        status = "FAILED" if violations else "OK"
+        if warnings:
+            status += f" ({len(warnings)} known-issue warning(s))"
+        print(f"{capability_dir.name}: {status}")
+        for violation in violations:
+            print(f"  - {violation}")
+        for warning in warnings:
+            print(f"  ! {warning}")
+            if in_actions:
+                print(
+                    f"::warning title=Security floor ({capability_dir.name})::{warning}"
+                )
+        failed = failed or bool(violations)
 
     if failed:
         print(
