@@ -61,7 +61,7 @@ The `[workspace]` table is Pixi's own and is not part of the capability metadata
 
 | Field | Required | Description |
 |---|---|---|
-| `requires-pixi` | Yes (in this repository) | Minimum Pixi version allowed to resolve or install the capability, as a Pixi version spec. Pixi refuses to run when its own version does not satisfy it. Keep it at or above `">=0.82.1"`: earlier Pixi releases verify downloads with an embedded root store that still trusts the intermediate certificates compromised in the October 2026 eMudhra incident. Consumers that read `[workspace]` (Collab, the Hub, Nebi) ignore the key. |
+| `requires-pixi` | Yes (in this repository) | Minimum Pixi version allowed to resolve or install the capability, as a Pixi version spec. Pixi refuses to run when its own version does not satisfy it. Keep it at or above `">=0.82.1"`: earlier Pixi releases verify downloads with an embedded root store that still trusts the intermediate certificates compromised in the October 2026 eMudhra incident; `scripts/check_security_floors.py` enforces this floor in CI. Consumers that read `[workspace]` (Collab, the Hub, Nebi) ignore the key. |
 
 ## `[tool.nebi.capability]`
 

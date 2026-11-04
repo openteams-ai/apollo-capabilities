@@ -79,6 +79,9 @@ pixi run launch
 2. Decide whether the capability is a **Prog** or a **Cog**. Use Prog for an app, workflow, notebook, service, or other user-facing program; use Cog for an AI-based worker, agent, assistant, or cognitive service.
 3. Add a `pixi.toml` following the specification in [`spec/SCHEMA.md`](spec/SCHEMA.md) and [`spec/capability.schema.json`](spec/capability.schema.json).
 4. Optionally add a `README.md` documenting tasks, environment variables, and any Prog/Cog relationships.
+5. Generate `pixi.lock` with Pixi 0.82.1 or later and make sure `python scripts/check_security_floors.py` passes.
+
+CI runs that check on every pull request that changes a capability's `pixi.toml` or `pixi.lock`, and on every push to `main`. It fails when a lock pins a root bundle (`ca-certificates`, `certifi`), Python, or a tool that ships its own roots or certificate verifier (`pip`, `uv`, `hf-xet`) older than the first release that rejects the keys compromised in the [October 2026 eMudhra incident](https://emudhra.we-have-a-problem.com/), or when `requires-pixi` allows an older Pixi. When it flags a package, re-lock that package with `pixi update --manifest-path capabilities/<name>/pixi.toml <package>`. The floors and the reasons for them are listed at the top of the script.
 
 ## Specification
 

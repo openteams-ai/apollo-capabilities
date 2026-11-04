@@ -32,7 +32,7 @@ runs-in = "background"
 # from ComfyUI's release requirements.txt) is installed by `comfy install`
 # into the active pixi env at initialize time.
 [dependencies]
-python = ">=3.10,<3.14"
+python = ">=3.11,<3.14"
 git = "*"
 pip = "*"
 

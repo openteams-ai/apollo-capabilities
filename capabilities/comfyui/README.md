@@ -27,3 +27,7 @@ On first launch the GUI opens to ComfyUI's built-in default graph. To run z_imag
 To run setup without launching the GUI: `pixi run initialize` (install + model download only). To re-run a single stage: `pixi run install-comfyui` or `pixi run download-models`.
 
 Analytics/tracking is disabled via `comfy tracking disable` before every install and launch.
+
+### Known issue: Git on Windows
+
+On Windows, the `git` this capability installs (used to clone ComfyUI and custom nodes) is conda-forge's repackaged Git for Windows. No conda-forge build yet includes the Git for Windows fix for the [October 2026 eMudhra incident](https://emudhra.we-have-a-problem.com/) (`v2.56.0.windows.3`), so its bundled CA file still trusts the compromised certificates. When `http.sslBackend` is unset, as it is out of the box, it uses Schannel, which verifies HTTPS against the Windows certificate store that Windows Update has fixed. It is affected only if `http.sslBackend=openssl`, `http.sslCAInfo`, or `GIT_SSL_CAINFO` is set. The lock will be updated once a fixed build is published. Linux and macOS are not affected: there `git` verifies against the environment's updated `ca-certificates`.
