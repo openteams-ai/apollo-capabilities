@@ -5,12 +5,14 @@ on:
     paths:
       - "capabilities/**/pixi.toml"
       - "capabilities/**/pixi.lock"
+      - "capabilities/llamacpp/serve.py"
       - "spec/capability.schema.json"
       - ".github/workflows/validate.yml"
       - "scripts/check_security_floors.py"
       - "scripts/generate_catalog.py"
       - "scripts/test_check_security_floors.py"
       - "scripts/test_generate_catalog.py"
+      - "scripts/test_llamacpp_serve.py"
   # Also check main itself, so a merge that skipped or outran the PR checks
   # (a stale green run, or a PR whose paths did not trigger them) shows up red.
   push:
@@ -22,6 +24,18 @@ permissions:
   contents: read
 
 jobs:
+  windows-model-cache:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Check Windows model cache paths without downloading a model
+        run: python -m unittest discover -s scripts -p 'test_llamacpp_serve.py' -v
+
   validate:
     runs-on: ubuntu-latest
     steps:

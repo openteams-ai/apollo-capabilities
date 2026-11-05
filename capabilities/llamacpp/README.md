@@ -18,6 +18,8 @@ pixi run -e gpu serve unsloth/gemma-4-26B-A4B-it-GGUF:Q4_K_M
 
 This automatically downloads the correct llama.cpp build for your platform on first run. Before the server starts, a Python launcher checks the selected HuggingFace repo, pre-caches the matching model and mmproj GGUFs into a local `models/` HF cache (`HF_HOME=models`), and streams cache/download status to the terminal. Subsequent runs use the cached files. The server listens on llama.cpp's default port 8080.
 
+On Windows, the launcher uses the absolute extended-path form of that same cache for both download and serving. Existing cached files stay in place, and deeply nested Collab workspaces do not require enabling the system long-path policy.
+
 The default model is [`unsloth/gemma-4-E4B-it-GGUF:Q4_K_M`](https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF). Pass any HuggingFace GGUF repo as a positional argument to override (see examples above).
 
 | Platform | `default` (CPU) | `gpu` |

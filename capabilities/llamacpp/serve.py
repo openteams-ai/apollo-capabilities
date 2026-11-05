@@ -1,5 +1,6 @@
 import argparse
 import errno
+import ntpath
 import os
 import re
 import shutil
@@ -17,6 +18,22 @@ from huggingface_hub import HfApi, snapshot_download
 
 DEFAULT_MODEL = 'unsloth/gemma-4-E4B-it-GGUF:Q4_K_M'
 HF_HOME = 'models'
+
+
+def prepare_cache_home():
+    cache_home = os.environ.get('HF_HOME', HF_HOME)
+    if sys.platform == 'win32':
+        # The Hub client checks the blob name before adding '.incomplete'.
+        # A 255-character blob can therefore become an unhandled long path.
+        # Use the same absolute extended path for the downloader and server,
+        # retaining the existing cache without requiring a Windows policy change.
+        cache_home = ntpath.abspath(cache_home)
+        if not cache_home.startswith('\\\\?\\'):
+            if cache_home.startswith('\\\\'):
+                cache_home = '\\\\?\\UNC\\' + cache_home[2:]
+            else:
+                cache_home = '\\\\?\\' + cache_home
+    os.environ['HF_HOME'] = cache_home
 
 
 def status(message):
@@ -259,8 +276,8 @@ def main():
     parser.add_argument('--backend', choices=['cpu', 'gpu'], default=os.environ.get('LLAMA_BACKEND', 'gpu'))
     args = parser.parse_args()
 
-    os.environ.setdefault('HF_HOME', HF_HOME)
     try:
+        prepare_cache_home()
         ensure_model_cached(args.model)
         start_server(args.model, args.backend)
     except Exception as exc:
