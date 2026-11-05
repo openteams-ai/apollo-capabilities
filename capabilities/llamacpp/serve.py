@@ -1,5 +1,6 @@
 import argparse
 import errno
+import ntpath
 import os
 import re
 import shutil
@@ -17,6 +18,47 @@ from huggingface_hub import HfApi, snapshot_download
 
 DEFAULT_MODEL = 'unsloth/gemma-4-E4B-it-GGUF:Q4_K_M'
 HF_HOME = 'models'
+
+
+def windows_cache_path(path):
+    if path.startswith('\\\\.\\'):
+        raise ValueError('Windows device paths cannot be used as a model cache.')
+    path = ntpath.abspath(ntpath.join(os.getcwd(), path))
+    if path.startswith('\\\\?\\'):
+        return path
+    if path.startswith('\\\\'):
+        return '\\\\?\\UNC\\' + path[2:]
+    return '\\\\?\\' + path
+
+
+def prepare_cache_home():
+    cache_home = os.environ.get('HF_HOME', HF_HOME)
+    if sys.platform == 'win32':
+        cache_home = windows_cache_path(cache_home)
+        # Follow b9200's cache precedence, then give both clients that same
+        # directory. Otherwise --offline could read a different cache from
+        # the one the Python/CLI downloader just prepared.
+        cache_dir = next((os.environ[name] for name in (
+            'LLAMA_CACHE', 'HF_HUB_CACHE', 'HUGGINGFACE_HUB_CACHE'
+        ) if os.environ.get(name)), ntpath.join(cache_home, 'hub'))
+        cache_dir = windows_cache_path(cache_dir)
+        for name in ('LLAMA_CACHE', 'HF_HUB_CACHE', 'HUGGINGFACE_HUB_CACHE'):
+            os.environ[name] = cache_dir
+    os.environ['HF_HOME'] = cache_home
+
+
+def cache_directory(hf_home):
+    if sys.platform == 'win32':
+        return os.environ['HF_HUB_CACHE']
+    return os.path.join(hf_home, 'hub')
+
+
+def display_path(path):
+    if path.startswith('\\\\?\\UNC\\'):
+        return '\\\\' + path[8:]
+    if path.startswith('\\\\?\\'):
+        return path[4:]
+    return path
 
 
 def status(message):
@@ -142,12 +184,12 @@ def stream_command(command, env):
 def download_with_python(repo_id, files):
     status('hf CLI was not found; using huggingface_hub snapshot_download instead.')
     status('Download progress will still be printed by the Hugging Face Python client when available.')
-    cache_dir = os.path.join(os.environ.get('HF_HOME', HF_HOME), 'hub')
+    cache_dir = cache_directory(os.environ['HF_HOME'])
     snapshot_download(repo_id=repo_id, allow_patterns=files, cache_dir=cache_dir)
 
 
 def find_cached_repo_files(repo_id, hf_home):
-    cache_dir = os.path.join(hf_home, 'hub')
+    cache_dir = cache_directory(hf_home)
     repo_dir = os.path.join(cache_dir, 'models--' + repo_id.replace('/', '--'))
     snapshots_dir = os.path.join(repo_dir, 'snapshots')
     if not os.path.isdir(snapshots_dir):
@@ -167,8 +209,9 @@ def find_cached_repo_files(repo_id, hf_home):
 def ensure_model_cached(model):
     repo_id, selector = parse_model_spec(model)
     status(f'Preparing Hugging Face model cache for {model}')
-    hf_home = os.environ.get('HF_HOME', HF_HOME)
-    status(f'Using HF_HOME={hf_home}')
+    hf_home = os.environ['HF_HOME']
+    cache_display = display_path(cache_directory(hf_home))
+    status(f'Using model cache: {cache_display}')
 
     api = HfApi()
     status(f'Checking repository files for {repo_id} ...')
@@ -179,10 +222,10 @@ def ensure_model_cached(model):
         if not cached:
             raise RuntimeError(
                 f'Could not reach Hugging Face ({exc}) and no cached files were found for {repo_id} '
-                f'in {hf_home}/hub. Connect to the internet for the first run, then retry offline.'
+                f'in {cache_display}. Connect to the internet for the first run, then retry offline.'
             ) from exc
         status(f'WARNING: Could not contact Hugging Face: {exc}')
-        status(f'Using cached files from {hf_home}/hub.')
+        status(f'Using cached files from {cache_display}.')
         selected_files = select_model_files(cached, selector)
         status('Selected cached model files:')
         for path in selected_files:
@@ -197,7 +240,6 @@ def ensure_model_cached(model):
         status(f'  {path}')
 
     env = os.environ.copy()
-    env.setdefault('HF_HOME', HF_HOME)
     env.setdefault('PYTHONUNBUFFERED', '1')
     env.setdefault('PYTHONIOENCODING', 'utf-8')
     env.setdefault('PYTHONUTF8', '1')
@@ -229,6 +271,12 @@ def server_binary():
 
 def server_args(model, backend):
     args = [server_binary(), '-hf', model]
+    if sys.platform == 'win32':
+        # Download is complete. b9200's online HF reader joins API paths
+        # containing '/' onto the extended cache path, invalid on Windows.
+        # Its offline reader enumerates native snapshot paths instead and
+        # retains upstream shard/mmproj selection without a second download.
+        args.append('--offline')
     if backend == 'gpu':
         args.extend(['-fa', 'on', '-c', '24000', '--n-gpu-layers', '999'])
     else:
@@ -259,8 +307,8 @@ def main():
     parser.add_argument('--backend', choices=['cpu', 'gpu'], default=os.environ.get('LLAMA_BACKEND', 'gpu'))
     args = parser.parse_args()
 
-    os.environ.setdefault('HF_HOME', HF_HOME)
     try:
+        prepare_cache_home()
         ensure_model_cached(args.model)
         start_server(args.model, args.backend)
     except Exception as exc:
