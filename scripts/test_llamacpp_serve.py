@@ -218,7 +218,9 @@ class WindowsServerLifetimeTests(unittest.TestCase):
                             process.wait(timeout=10)
 
     def test_main_returns_actual_server_exit_status(self):
-        for code in (0, 23):
+        # 0xC0000005 is an access violation. Windows reports exit codes as
+        # unsigned 32-bit values, and this one is above the signed range.
+        for code in (0, 23, 0xC0000005):
             with self.subTest(code=code), tempfile.TemporaryDirectory() as directory:
                 result = subprocess.run([sys.executable, __file__, "--lifetime-launcher", str(Path(directory) / "unused.json"), str(code)], capture_output=True, text=True, timeout=10)
                 self.assertEqual(result.returncode, code, result.stdout + result.stderr)
@@ -237,7 +239,12 @@ def lifetime_fixture():
         return serve.main()
     if mode == "--lifetime-server":
         if sys.argv[3] != "hold":
-            return int(sys.argv[3])
+            # Exit with the full unsigned status, as a native server does.
+            # Python 3.12's own exit would turn 0xC0000005 into -1.
+            import ctypes
+            kernel = ctypes.WinDLL("kernel32")
+            kernel.ExitProcess.argtypes = [ctypes.c_uint]
+            kernel.ExitProcess(int(sys.argv[3]))
         child_ready = ready.with_suffix(".child.json")
         child = subprocess.Popen([sys.executable, __file__, "--lifetime-leaf", str(child_ready)])
         try:
