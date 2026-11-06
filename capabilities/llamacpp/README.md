@@ -20,6 +20,8 @@ This automatically downloads the correct llama.cpp build for your platform on fi
 
 On Windows, the launcher uses extended paths for the cache and starts llama.cpp in offline cache mode after download, so repository subfolders are read with native path separators. It aligns the downloader and server cache using llama.cpp’s precedence: `LLAMA_CACHE`, `HF_HUB_CACHE`, `HUGGINGFACE_HUB_CACHE`, then `HF_HOME/hub`. Existing cached files stay in place; no system long-path policy change is required.
 
+The Windows launcher waits for the server to exit, keeping it in the process tree stopped by Collab's Stop and Quit actions, and returns the server's exit status. Other platforms retain their existing process replacement behavior.
+
 The default model is [`unsloth/gemma-4-E4B-it-GGUF:Q4_K_M`](https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF). Pass any HuggingFace GGUF repo as a positional argument to override (see examples above).
 
 | Platform | `default` (CPU) | `gpu` |

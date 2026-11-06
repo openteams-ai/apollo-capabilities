@@ -298,6 +298,11 @@ def start_server(model, backend):
     args = server_args(model, backend)
     status('Starting llama.cpp server ...')
     status(f'Running: {" ".join(args)}')
+    if sys.platform == 'win32':
+        # Windows exec starts a new process and exits this launcher rather
+        # than retaining its PID. Keep the Pixi-owned tree alive so Collab's
+        # Stop/Quit can terminate the server and propagate its actual exit.
+        return subprocess.call(args, env=os.environ.copy())
     os.execvpe(args[0], args, os.environ.copy())
 
 
@@ -310,11 +315,10 @@ def main():
     try:
         prepare_cache_home()
         ensure_model_cached(args.model)
-        start_server(args.model, args.backend)
+        return start_server(args.model, args.backend)
     except Exception as exc:
         status(f'ERROR: {exc}')
         return 1
-    return 0
 
 
 if __name__ == '__main__':
