@@ -1,8 +1,11 @@
 import importlib.util
+import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
+import time
 import types
 import unittest
 from unittest import mock
@@ -29,7 +32,7 @@ class CacheHomeTests(unittest.TestCase):
             mock.patch.object(serve.sys, "platform", "win32"),
             mock.patch.object(serve.sys, "argv", [str(SOURCE)]),
             mock.patch.object(serve, "ensure_model_cached", side_effect=lambda *_: observed.append(os.environ["HF_HOME"])),
-            mock.patch.object(serve, "start_server", side_effect=lambda *_: observed.append(os.environ["HF_HOME"])),
+            mock.patch.object(serve, "start_server", side_effect=lambda *_: observed.append(os.environ["HF_HOME"]) or 0),
         ):
             self.assertEqual(serve.main(), 0)
         self.assertEqual(observed, ["\\\\?\\" + cache] * 2)
@@ -47,10 +50,12 @@ class CacheHomeTests(unittest.TestCase):
             mock.patch.object(serve, "snapshot_download", side_effect=lambda **kw: observed.append(kw)),
             mock.patch.object(serve.os.path, "exists", return_value=True),
             mock.patch.object(serve.os, "execvpe") as execute,
+            mock.patch.object(serve.subprocess, "call", return_value=0) as run,
         ):
             self.assertEqual(serve.main(), 0)
-        args = execute.call_args.args[1]
-        server_env = execute.call_args.args[2]
+        execute.assert_not_called()
+        args = run.call_args.args[0]
+        server_env = run.call_args.kwargs["env"]
         self.assertIn("--offline", args)
         self.assertEqual(args[1:3], ["-hf", serve.DEFAULT_MODEL])
         self.assertEqual(server_env["LLAMA_CACHE"], r"\\?\C:\work\models\hub")
@@ -113,10 +118,152 @@ class CacheHomeTests(unittest.TestCase):
                 serve.prepare_cache_home()
                 self.assertTrue(os.environ["HF_HOME"].startswith("\\\\?\\"))
                 target = Path(os.environ["HF_HOME"]) / leaf
-                with target.open("ab") as output:
-                    output.write(b"cache-path-control")
-                self.assertEqual(target.read_bytes(), b"cache-path-control")
+                try:
+                    with target.open("ab") as output:
+                        output.write(b"cache-path-control")
+                    self.assertEqual(target.read_bytes(), b"cache-path-control")
+                finally:
+                    # Cleanup must use the extended path too when the machine
+                    # has its ordinary long-path policy disabled.
+                    target.unlink(missing_ok=True)
+
+
+class ServerStartTests(unittest.TestCase):
+    def test_unix_keeps_exec_handoff(self):
+        with (
+            mock.patch.object(serve.sys, "platform", "linux"),
+            mock.patch.object(serve.os.path, "exists", return_value=True),
+            mock.patch.object(serve.os, "execvpe") as execute,
+            mock.patch.object(serve.subprocess, "call") as run,
+        ):
+            serve.start_server("fixture/repo:Q4_K_M", "cpu")
+        run.assert_not_called()
+        self.assertEqual(execute.call_args.args[0], os.path.join("bin", "llama-server"))
+        self.assertEqual(execute.call_args.args[1][:3], [os.path.join("bin", "llama-server"), "-hf", "fixture/repo:Q4_K_M"])
+
+    def test_main_reports_windows_start_failure(self):
+        with (
+            mock.patch.object(serve.sys, "platform", "win32"),
+            mock.patch.object(serve.sys, "argv", [str(SOURCE)]),
+            mock.patch.object(serve, "prepare_cache_home"),
+            mock.patch.object(serve, "ensure_model_cached"),
+            mock.patch.object(serve.os.path, "exists", return_value=True),
+            mock.patch.object(serve.subprocess, "call", side_effect=OSError("synthetic start failure")),
+            mock.patch.object(serve, "status") as status,
+        ):
+            self.assertEqual(serve.main(), 1)
+        self.assertIn("ERROR: synthetic start failure", [c.args[0] for c in status.call_args_list])
+
+
+def wait_fixture(path):
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        try:
+            return json.loads(path.read_text())
+        except (FileNotFoundError, json.JSONDecodeError):
+            time.sleep(0.02)
+    raise AssertionError(f"fixture did not become ready: {path.name}")
+
+
+@unittest.skipUnless(os.name == "nt", "real Windows launcher/process-tree control")
+class WindowsServerLifetimeTests(unittest.TestCase):
+    def test_launcher_stays_owned_until_tree_stop_and_preserves_other_process(self):
+        import ctypes
+        from ctypes import wintypes
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        kernel.OpenProcess.restype = wintypes.HANDLE
+        kernel.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        kernel.WaitForSingleObject.restype = wintypes.DWORD
+        kernel.TerminateProcess.argtypes = [wintypes.HANDLE, wintypes.UINT]
+        kernel.CloseHandle.argtypes = [wintypes.HANDLE]
+        handles = []
+        launcher = peer = None
+        with tempfile.TemporaryDirectory(prefix="llama-lifetime-") as directory:
+            ready = Path(directory) / "server.json"
+            peer_ready = Path(directory) / "peer.json"
+            with (Path(directory) / "output.txt").open("w") as output:
+                try:
+                    peer = subprocess.Popen([sys.executable, __file__, "--lifetime-leaf", str(peer_ready)], stdout=output, stderr=output)
+                    wait_fixture(peer_ready)
+                    launcher = subprocess.Popen([sys.executable, __file__, "--lifetime-launcher", str(ready), "hold"], stdout=output, stderr=output)
+                    identities = wait_fixture(ready)
+                    for pid in (identities["server"], identities["child"]):
+                        handle = kernel.OpenProcess(0x101001, False, pid)
+                        self.assertTrue(handle, f"fixture PID {pid} must be alive before Stop")
+                        handles.append(handle)
+                        self.assertEqual(kernel.WaitForSingleObject(handle, 0), 258)
+                    with self.assertRaises(subprocess.TimeoutExpired, msg="Windows launcher exited while its server was still alive"):
+                        launcher.wait(timeout=0.5)
+                    # The same OS tree-stop operation used by Collab, applied
+                    # only to the fixture root. Held child handles prove exit.
+                    subprocess.run(["taskkill", "/T", "/F", "/PID", str(launcher.pid)], check=True, stdout=output, stderr=output)
+                    launcher.wait(timeout=10)
+                    for handle in handles:
+                        self.assertEqual(kernel.WaitForSingleObject(handle, 10000), 0, "owned descendant survived tree Stop")
+                    self.assertIsNone(peer.poll(), "tree Stop affected an unrelated process")
+                finally:
+                    # Handles retain exact fixture identities even if the old
+                    # launcher exited, so pre-fix failures cannot leak a child.
+                    for handle in handles:
+                        if kernel.WaitForSingleObject(handle, 0) == 258:
+                            kernel.TerminateProcess(handle, 1)
+                            kernel.WaitForSingleObject(handle, 10000)
+                        kernel.CloseHandle(handle)
+                    for process in (launcher, peer):
+                        if process is not None:
+                            if process.poll() is None:
+                                process.kill()
+                            process.wait(timeout=10)
+
+    def test_main_returns_actual_server_exit_status(self):
+        # 0xC0000005 is an access violation. Windows reports exit codes as
+        # unsigned 32-bit values, and this one is above the signed range.
+        for code in (0, 23, 0xC0000005):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as directory:
+                result = subprocess.run([sys.executable, __file__, "--lifetime-launcher", str(Path(directory) / "unused.json"), str(code)], capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+
+
+def lifetime_fixture():
+    mode, ready = sys.argv[1], Path(sys.argv[2])
+    if mode == "--lifetime-launcher":
+        outcome = sys.argv[3]
+        # Replace only executable discovery/arguments and network preparation.
+        # The production main/start_server and real Windows handoff run intact.
+        serve.ensure_model_cached = lambda *_: None
+        serve.server_binary = lambda: sys.executable
+        serve.server_args = lambda *_: [sys.executable, __file__, "--lifetime-server", str(ready), outcome]
+        sys.argv = [str(SOURCE), "--backend", "cpu"]
+        return serve.main()
+    if mode == "--lifetime-server":
+        if sys.argv[3] != "hold":
+            # Exit with the full unsigned status, as a native server does.
+            # Python 3.12's own exit would turn 0xC0000005 into -1.
+            import ctypes
+            kernel = ctypes.WinDLL("kernel32")
+            kernel.ExitProcess.argtypes = [ctypes.c_uint]
+            kernel.ExitProcess(int(sys.argv[3]))
+        child_ready = ready.with_suffix(".child.json")
+        child = subprocess.Popen([sys.executable, __file__, "--lifetime-leaf", str(child_ready)])
+        try:
+            wait_fixture(child_ready)
+            ready.write_text(json.dumps({"server": os.getpid(), "child": child.pid}))
+            print("synthetic server ready", flush=True)
+            time.sleep(60)
+        finally:
+            child.terminate()
+            child.wait(timeout=10)
+        return 0
+    if mode == "--lifetime-leaf":
+        ready.write_text(json.dumps({"pid": os.getpid()}))
+        time.sleep(60)
+        return 0
+    raise ValueError("unknown lifetime fixture mode")
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1].startswith("--lifetime-"):
+        sys.exit(lifetime_fixture())
     unittest.main()
