@@ -302,7 +302,11 @@ def start_server(model, backend):
         # Windows exec starts a new process and exits this launcher rather
         # than retaining its PID. Keep the Pixi-owned tree alive so Collab's
         # Stop/Quit can terminate the server and propagate its actual exit.
-        return subprocess.call(args, env=os.environ.copy())
+        code = subprocess.call(args, env=os.environ.copy())
+        # Windows exit codes are unsigned 32-bit values (an access violation
+        # is 0xC0000005). Python 3.12's sys.exit turns anything above
+        # 0x7FFFFFFF into -1, so return the same 32 bits as a signed int.
+        return code - 0x100000000 if code > 0x7FFFFFFF else code
     os.execvpe(args[0], args, os.environ.copy())
 
 
