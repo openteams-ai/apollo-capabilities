@@ -103,7 +103,7 @@ def detect_asset(assets, local_cuda=None):
     if plat == 'linux':
         if BACKEND == 'gpu':
             return first(lambda n: 'ubuntu' in n and 'vulkan' in n and 'x64' in n and n.endswith('.tar.gz'))
-        return first(lambda n: 'ubuntu' in n and 'x64' in n and 'vulkan' not in n and 'openvino' not in n and 'rocm' not in n and n.endswith('.tar.gz'))
+        return first(lambda n: n == f'llama-{LLAMACPP_RELEASE_TAG}-bin-ubuntu-x64.tar.gz')
     if plat == 'darwin':
         if 'arm' in arch or 'aarch64' in arch:
             return first(lambda n: 'macos' in n and 'arm64' in n and 'kleidiai' not in n and n.endswith('.tar.gz'))
