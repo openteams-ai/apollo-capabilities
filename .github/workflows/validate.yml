@@ -5,6 +5,7 @@ on:
     paths:
       - "capabilities/**/pixi.toml"
       - "capabilities/**/pixi.lock"
+      - "capabilities/llamacpp/app.py"
       - "capabilities/llamacpp/serve.py"
       - "spec/capability.schema.json"
       - ".github/workflows/validate.yml"
@@ -12,6 +13,7 @@ on:
       - "scripts/generate_catalog.py"
       - "scripts/test_check_security_floors.py"
       - "scripts/test_generate_catalog.py"
+      - "scripts/test_llamacpp_app.py"
       - "scripts/test_llamacpp_serve.py"
   # Also check main itself, so a merge that skipped or outran the PR checks
   # (a stale green run, or a PR whose paths did not trigger them) shows up red.

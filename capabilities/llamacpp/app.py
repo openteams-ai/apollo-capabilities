@@ -221,53 +221,58 @@ def release_metadata():
     return json.loads(urllib.request.urlopen(req, timeout=10).read())
 
 
-if BACKEND == 'gpu' and sys.platform in ('linux', 'win32'):
-    require_nvidia_gpu()
+def main():
+    if BACKEND == 'gpu' and sys.platform in ('linux', 'win32'):
+        require_nvidia_gpu()
 
-try:
-    data = release_metadata()
-except (TimeoutError, urllib.error.URLError) as exc:
-    version_key = installed_version_key()
-    if version_key:
-        version = version_key.rsplit('-', 1)[0]
-        print(f'WARNING: Could not fetch llama.cpp release {LLAMACPP_RELEASE_TAG}: {exc}')
-        print(f'Using cached llama.cpp {version} ({BACKEND}) from {BIN_DIR}/.')
+    try:
+        data = release_metadata()
+    except (TimeoutError, urllib.error.URLError) as exc:
+        version_key = installed_version_key()
+        if version_key:
+            version = version_key.rsplit('-', 1)[0]
+            print(f'WARNING: Could not fetch llama.cpp release {LLAMACPP_RELEASE_TAG}: {exc}')
+            print(f'Using cached llama.cpp {version} ({BACKEND}) from {BIN_DIR}/.')
+            sys.exit(0)
+        print(f'ERROR: Could not download llama.cpp release metadata: {exc}')
+        print('Connect to the internet for the first run, then retry offline after the binary is cached.')
+        sys.exit(1)
+    tag = data['tag_name']
+    local_cuda = None
+    if sys.platform == 'win32' and BACKEND == 'gpu':
+        local_cuda = detect_local_cuda()
+        if local_cuda:
+            print(f'Detected local CUDA: {local_cuda[0]}.{local_cuda[1]}')
+    version_key = f'{tag}-{BACKEND}'
+    if installed_version_key() == version_key:
+        print(f'llama.cpp {tag} ({BACKEND}) already downloaded, skipping.')
         sys.exit(0)
-    print(f'ERROR: Could not download llama.cpp release metadata: {exc}')
-    print('Connect to the internet for the first run, then retry offline after the binary is cached.')
-    sys.exit(1)
-tag = data['tag_name']
-local_cuda = None
-if sys.platform == 'win32' and BACKEND == 'gpu':
-    local_cuda = detect_local_cuda()
-    if local_cuda:
-        print(f'Detected local CUDA: {local_cuda[0]}.{local_cuda[1]}')
-version_key = f'{tag}-{BACKEND}'
-if installed_version_key() == version_key:
-    print(f'llama.cpp {tag} ({BACKEND}) already downloaded, skipping.')
-    sys.exit(0)
-asset = detect_asset(data['assets'], local_cuda)
-if not asset:
-    print(f'ERROR: No matching asset for {sys.platform}/{platform.machine()}/{BACKEND}')
-    for a in data['assets']:
-        n = a['name']
-        print(f'  {n}')
-    sys.exit(1)
-aname = asset['name']
-print(f'Selected: {aname}  (platform={sys.platform}, backend={BACKEND})')
-download_file(asset['browser_download_url'], aname)
-extract(aname, BIN_DIR)
-make_executable(BIN_DIR)
-if sys.platform == 'win32' and BACKEND == 'gpu':
-    crt = pick_cudart(data['assets'], asset)
-    if crt:
-        cn = crt['name']
-        print(f'Also downloading CUDA runtime: {cn}')
-        download_file(crt['browser_download_url'], cn)
-        with zipfile.ZipFile(cn, 'r') as zf:
-            zf.extractall(BIN_DIR)
-        os.remove(cn)
-smoke_test_server()
-with open(MARKER, 'w') as f:
-    f.write(version_key)
-print(f'llama.cpp {tag} ({BACKEND}) ready in {BIN_DIR}/')
+    asset = detect_asset(data['assets'], local_cuda)
+    if not asset:
+        print(f'ERROR: No matching asset for {sys.platform}/{platform.machine()}/{BACKEND}')
+        for a in data['assets']:
+            n = a['name']
+            print(f'  {n}')
+        sys.exit(1)
+    aname = asset['name']
+    print(f'Selected: {aname}  (platform={sys.platform}, backend={BACKEND})')
+    download_file(asset['browser_download_url'], aname)
+    extract(aname, BIN_DIR)
+    make_executable(BIN_DIR)
+    if sys.platform == 'win32' and BACKEND == 'gpu':
+        crt = pick_cudart(data['assets'], asset)
+        if crt:
+            cn = crt['name']
+            print(f'Also downloading CUDA runtime: {cn}')
+            download_file(crt['browser_download_url'], cn)
+            with zipfile.ZipFile(cn, 'r') as zf:
+                zf.extractall(BIN_DIR)
+            os.remove(cn)
+    smoke_test_server()
+    with open(MARKER, 'w') as f:
+        f.write(version_key)
+    print(f'llama.cpp {tag} ({BACKEND}) ready in {BIN_DIR}/')
+
+
+if __name__ == '__main__':
+    main()
