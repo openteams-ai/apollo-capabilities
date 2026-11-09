@@ -62,6 +62,17 @@ def selected_name(platform, machine, backend, names=ASSET_NAMES, local_cuda=None
 
 
 class DetectAssetTests(unittest.TestCase):
+    def test_recorded_names_belong_to_the_pinned_release(self):
+        # The cases below patch the tag to RELEASE_TAG, so after a pin bump they
+        # would keep passing against b9200's names. A change in asset order
+        # between releases is what caused the Linux CPU bug, so fail here instead.
+        self.assertEqual(
+            app.LLAMACPP_RELEASE_TAG,
+            RELEASE_TAG,
+            "app.py's llama.cpp pin moved: re-record RELEASE_TAG and ASSET_NAMES "
+            "from the new release, in the order GitHub's release API returns them.",
+        )
+
     def test_each_platform_and_backend_gets_its_build(self):
         for platform, machine, backend, local_cuda, expected in (
             ("linux", "x86_64", "cpu", None, "llama-b9200-bin-ubuntu-x64.tar.gz"),
