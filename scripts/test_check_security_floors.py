@@ -142,8 +142,58 @@ class LockViolationTests(unittest.TestCase):
                     f"conda: {CONDA}/noarch/pip-26.2.1-pyh145f28c_0.conda",
                 )
             ),
-            ["hf-xet 1.7.0 < 1.7.1", "pip 26.2.1 < 26.2.2", "uv 0.13.4 < 0.13.5"],
+            ["hf-xet 1.7.0 < 1.7.1", "pip 26.2.1 < 26.2.2", "uv 0.13.4 < 0.13.6"],
         )
+        # The incident page names uv 0.13.5; the PyPA advisory's 0.13.6 is used.
+        self.assertEqual(
+            lock_violations(lock(f"pypi: {PYPI}/uv-0.13.5-py3-none-win_amd64.whl")),
+            ["uv 0.13.5 < 0.13.6"],
+        )
+
+    def test_grpc_below_the_fix_fails(self) -> None:
+        self.assertEqual(
+            lock_violations(
+                lock(
+                    f"conda: {CONDA}/linux-64/libgrpc-1.78.1-h1d1128b_0.conda",
+                    f"pypi: {PYPI}/grpcio-1.84.0-cp312-cp312-win_amd64.whl",
+                    f"conda: {CONDA}/linux-64/grpc-cpp-1.51.1-h27aab58_3.conda",
+                )
+            ),
+            [
+                "grpc-cpp 1.51.1 < 1.84.1",
+                "grpcio 1.84.0 < 1.84.1",
+                "libgrpc 1.78.1 < 1.84.1",
+            ],
+        )
+        self.assertEqual(
+            lock_violations(
+                lock(
+                    f"conda: {CONDA}/linux-64/libgrpc-1.85.3-h38bdcb4_0.conda",
+                    f"pypi: {PYPI}/grpcio-1.84.1-cp312-cp312-win_amd64.whl",
+                )
+            ),
+            [],
+        )
+
+    def test_git_below_the_fixed_windows_build_fails(self) -> None:
+        # conda-forge's 2.56.0 win-64 builds repackage the unfixed
+        # v2.56.0.windows.1, so the floor is 2.56.1 on every platform.
+        self.assertEqual(
+            lock_violations(
+                lock(
+                    f"conda: {CONDA}/win-64/git-2.56.0-h57928b3_1.conda",
+                    f"conda: {CONDA}/linux-64/git-2.53.0-pl5321h6d3cee1_0.conda",
+                )
+            ),
+            ["git 2.53.0 < 2.56.1", "git 2.56.0 < 2.56.1"],
+        )
+        text = lock(
+            FIXED_CA,
+            f"conda: {CONDA}/win-64/git-2.56.1-h57928b3_1.conda",
+            f"conda: {CONDA}/linux-64/git-2.56.1-pl5440h9d5d2b8_1.conda",
+        )
+        self.assertEqual(lock_violations(text), [])
+        self.assertEqual(lock_warnings(text), [])
 
 
 class LockParsingFailsClosedTests(unittest.TestCase):
@@ -212,21 +262,6 @@ class KnownIssueWarningTests(unittest.TestCase):
             ],
         )
 
-    def test_only_windows_git_warns(self) -> None:
-        text = lock(
-            FIXED_CA,
-            f"conda: {CONDA}/win-64/git-2.53.0-h57928b3_0.conda",
-            f"conda: {CONDA}/linux-64/git-2.53.0-pl5321h6d3cee1_0.conda",
-        )
-        self.assertEqual(lock_violations(text), [])
-        self.assertEqual(
-            lock_warnings(text),
-            [
-                "git 2.53.0 (win-64): known issue, no conda-forge build of a "
-                "fixed Git for Windows yet"
-            ],
-        )
-
 
 class ManifestViolationTests(unittest.TestCase):
     def test_requires_pixi_floor(self) -> None:
@@ -292,7 +327,10 @@ class MainTests(unittest.TestCase):
             root = Path(directory)
             self.write_capability(
                 root,
-                lock(FIXED_CA, f"conda: {CONDA}/win-64/git-2.53.0-h57928b3_0.conda"),
+                lock(
+                    FIXED_CA,
+                    f"conda: {CONDA}/win-64/polars-runtime-32-1.39.3-py310h0_1.conda",
+                ),
             )
             code, output = self.run_main(root)
         self.assertEqual(code, 0)
