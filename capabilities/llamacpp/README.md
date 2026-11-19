@@ -30,6 +30,17 @@ The default model is [`unsloth/gemma-4-E4B-it-GGUF:Q4_K_M`](https://huggingface.
 | macOS ARM (M-series) | CPU-only | Metal (built-in) |
 | Windows x64 | CPU build | CUDA (auto-detected) |
 
+Collab's normal local run defaults to CPU, even on GPU-capable machines. To run manually on gpu mode run `pixi run -e gpu serve`. 
+
+The server has a fixed context window:
+
+| Backend | Context (`-c`) |
+|---|---|
+| CPU (`pixi run serve`) | 8,192 tokens |
+| GPU (`pixi run -e gpu serve`) | 24,000 tokens |
+
+The window covers each whole request: the system prompt, all prior chat turns, the new message, and the generated reply.
+
 The GPU environment requires a CUDA 12+ driver on Linux/Windows. On Windows, the download script detects your local CUDA version via `nvidia-smi` and picks the highest compatible build. To override detection: `CONDA_OVERRIDE_CUDA=12.4 pixi run -e gpu serve`.
 
 To download just the llama.cpp binary without starting the server: `pixi run download-llamacpp` (or `pixi run -e gpu download-llamacpp`). Model GGUFs are fetched with visible progress on first `serve`.
