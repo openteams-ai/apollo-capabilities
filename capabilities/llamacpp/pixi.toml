@@ -18,7 +18,7 @@ spec-version = "0.1.0"
 
 [tool.nebi.capability.openteams.llamacpp]
 name = "llama.cpp Local Server"
-description = "OpenAI-compatible local inference server. Auto-detects OS/arch/GPU, downloads the matching llama.cpp build and model GGUFs, then serves on llama.cpp's default port 8080."
+description = "OpenAI-compatible local inference server. Downloads the matching llama.cpp build and model GGUFs for your OS, then serves on llama.cpp's default port 8080. Runs on CPU by default (8k context), and a GPU environment is available for manual runs."
 icon = "https://raw.githubusercontent.com/openteams-ai/apollo-capabilities/refs/heads/main/capabilities/llamacpp/icon.jpg"
 author = { name = "OpenTeams", email = "info@openteams.com" }
 tags = ["llm", "inference", "llama.cpp", "local"]
