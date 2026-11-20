@@ -33,3 +33,7 @@ The default model is [`unsloth/gemma-4-E4B-it-GGUF:Q4_K_M`](https://huggingface.
 The GPU environment requires a CUDA 12+ driver on Linux/Windows. On Windows, the download script detects your local CUDA version via `nvidia-smi` and picks the highest compatible build. To override detection: `CONDA_OVERRIDE_CUDA=12.4 pixi run -e gpu serve`.
 
 To download just the llama.cpp binary without starting the server: `pixi run download-llamacpp` (or `pixi run -e gpu download-llamacpp`). Model GGUFs are fetched with visible progress on first `serve`.
+
+### Network trust
+
+The binary and model downloads run in this capability's Python environment, which verifies HTTPS against trust stores updated for the [October 2026 eMudhra incident](https://emudhra.we-have-a-problem.com/). On Linux and macOS, `llama-server` then contacts Hugging Face itself when it starts, and verifies those connections against the host's own certificate store, which no lock here controls. Keep the host updated: for example, Debian or Ubuntu's `ca-certificates` package, or macOS 27.2.1, 26.7.3 or 15.8.3 or later. On Windows, `llama-server` starts in offline mode and makes no connections of its own.

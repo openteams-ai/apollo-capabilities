@@ -30,9 +30,24 @@ PACKAGE_FLOORS: dict[str, str] = {
     # pip verifies PyPI with its own vendored certifi.
     "pip": "26.2.2",
     # First releases built with rustls-webpki 0.103.16, which rejects chains
-    # containing the compromised keys, cross-signs included.
-    "uv": "0.13.5",
+    # containing the compromised keys, cross-signs included. For uv, the
+    # incident page names 0.13.5 but the PyPA advisory names 0.13.6; the
+    # stricter one is used.
+    "uv": "0.13.6",
     "hf-xet": "1.7.1",
+    # gRPC's bundled default roots; the incident page lists 1.84.1 and 1.85.0.
+    # grpc-cpp is conda-forge's old name for libgrpc; its last release was
+    # 1.51.1, so any lock that still pins it fails.
+    "libgrpc": "1.84.1",
+    "grpcio": "1.84.1",
+    "grpc-cpp": "1.84.1",
+    # conda-forge's win-64 git repackages Git for Windows, which fixed its
+    # bundled CA file in v2.56.0.windows.3. conda-forge builds win-64 from
+    # each version's .windows.1 tag, so its 2.56.0 builds are still unfixed
+    # and 2.56.1 is the first fixed one. On other platforms git verifies
+    # against the environment's ca-certificates, but 2.56.1 also fixes
+    # CVE-2026-111760 (code execution on recursive clone).
+    "git": "2.56.1",
 }
 
 # CPython's ssl module denies the compromised keys (gh-160040,
@@ -55,11 +70,6 @@ POLARS_FIX = "2.1.0"
 POLARS_PACKAGES = frozenset(
     {"polars", "polars-runtime-32", "polars-runtime-64", "polars-runtime-compat"}
 )
-# conda-forge's win-64 git repackages Git for Windows, which fixed its bundled
-# CA file in v2.56.0.windows.3, but no conda-forge build of a fixed release
-# exists yet (see capabilities/comfyui/README.md). Once one does, add "git" to
-# PACKAGE_FLOORS and drop this warning.
-WINDOWS_GIT_SUBDIR = "/win-64/"
 
 # Pixi 0.82.1 is the first release whose embedded root store and verifier
 # reject the compromised keys; see spec/SCHEMA.md.
@@ -180,16 +190,11 @@ def package_violation(name: str, version: str) -> str | None:
     return None
 
 
-def package_warning(name: str, version: str, url: str) -> str | None:
+def package_warning(name: str, version: str) -> str | None:
     if name in POLARS_PACKAGES and version_key(version) < version_key(POLARS_FIX):
         return (
             f"{name} {version} < {POLARS_FIX}: known issue, no fixed release "
             "this capability can use yet"
-        )
-    if name == "git" and WINDOWS_GIT_SUBDIR in url:
-        return (
-            f"git {version} (win-64): known issue, no conda-forge build of a "
-            "fixed Git for Windows yet"
         )
     return None
 
@@ -211,7 +216,7 @@ def lock_findings(lock_text: str) -> tuple[list[str], list[str]]:
         try:
             if violation := package_violation(name, version):
                 violations.add(violation)
-            if warning := package_warning(name, version, entry.url):
+            if warning := package_warning(name, version):
                 warnings.add(warning)
         except ValueError:
             violations.add(f"cannot parse the version {version!r} of {name}")

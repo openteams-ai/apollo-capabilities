@@ -13,6 +13,12 @@ pandas = ">=2.2,<3"
 numpy = ">=2.0,<3"
 requests = ">=2.31,<3"
 openai = ">=1.40,<2"
+# Security floor for a transitive dependency (streamlit -> pyarrow ->
+# libarrow -> libgoogle-cloud, libopentelemetry-cpp -> libgrpc): gRPC
+# before 1.84.1 bundles roots that trust the CAs compromised in the
+# October 2026 eMudhra incident, and an unconstrained solve still picks
+# such builds on some platforms.
+libgrpc = ">=1.84.1"
 
 [tool.nebi.bundle]
 include = ["app.py", "sample_orders.csv", "icon.jpg"]

@@ -107,19 +107,26 @@ jobs:
 
   lock-check:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # v0.82.1 is the floor every capability's requires-pixi names; the
+        # other entry is the latest release. Pixi 0.84 changed lock hashing,
+        # so a lock must stay valid for both.
+        pixi-version: [v0.82.1, v0.84.2]
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up pixi
-        uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
+        uses: prefix-dev/setup-pixi@9936258fee697aff89b3fed6ca1f80a382ef694e # v0.11.3
         with:
-          pixi-version: v0.82.1
+          pixi-version: ${{ matrix.pixi-version }}
           run-install: false
 
       # Fails when a lockfile no longer matches its manifest, so a manifest
-      # edit cannot land without a re-lock, and proves the pinned Pixi (the
-      # version every capability's requires-pixi names) reads every lock.
+      # edit cannot land without a re-lock, and proves both the minimum and
+      # the latest Pixi read every lock.
       - name: Lockfiles match manifests
         run: |
           set -euo pipefail

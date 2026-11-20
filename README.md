@@ -85,11 +85,12 @@ CI runs that check on every pull request that changes a capability's `pixi.toml`
 
 - the root bundles `ca-certificates` and `certifi`;
 - Python;
-- `pip`, `uv` and `hf-xet`, which ship their own roots or certificate verifier.
+- `pip`, `uv`, `hf-xet` and gRPC (`libgrpc`, `grpcio`), which ship their own roots or certificate verifier;
+- `git`, whose conda-forge Windows build bundles its own CA file.
 
-It also fails when `requires-pixi` allows an older Pixi. When it flags a package, re-lock that package with `pixi update --manifest-path capabilities/<name>/pixi.toml <package>`.
+It also fails when `requires-pixi` allows an older Pixi. When it flags a package, re-lock that package with `pixi update --manifest-path capabilities/<name>/pixi.toml <package>`. If the package is a transitive dependency that the solver keeps below the floor, add the floor to the capability's `[dependencies]` (as data-explorer does for `libgrpc`) and run `pixi lock`.
 
-A few affected packages have no fixed release a capability can use yet: polars 1.x and conda-forge's Windows `git`. The check reports these as warnings instead of failures, and each capability that uses one documents it as a known issue in its README. The floors, the warnings, and the reasons for them are listed at the top of the script.
+One affected package has no fixed release a capability can use yet: polars 1.x. The check reports it as a warning instead of a failure, and the capability that uses it documents it as a known issue in its README. The floors, the warnings, and the reasons for them are listed at the top of the script.
 
 ## Specification
 
